@@ -358,7 +358,7 @@ function makeSpeedTransfer(role){
 function openSpeedCalc(role){
   const data=makeSpeedTransfer(role); if(!data)return;
   const encoded=btoa(unescape(encodeURIComponent(JSON.stringify(data))));
-  window.open(`speed/index.html#hadou=${encodeURIComponent(encoded)}`,'_blank');
+  window.open(`speed.html#hadou=${encodeURIComponent(encoded)}`,'_blank');
 }
 function renderDetails(){const blocks=roles.filter(r=>selected[r]).map(r=>{const x=selected[r];const skills=[x['技能1'],x['技能2'],x['技能3'],x['技能4']].filter(Boolean).join(' / ')||'未登録';const ties=[x['縁1'],x['縁2'],x['縁3'],x['縁4'],x['縁5']].filter(Boolean).join(' / ')||'未登録';return `<div class="detail"><div class="detail-head"><div><div class="detail-role">${r}</div><div class="detail-name">${x['武将名']}</div></div><div class="grade">${branch} ${clean(x[branch])}</div></div><div class="row"><span class="label">天賦:</span> ${clean(x['天賦'])}　<span class="label">戦法:</span> ${clean(x['戦法名'])}</div><div class="row"><span class="label">戦法効果:</span> ${clean(x['戦法効果'])}</div><div class="row"><span class="label">発動間隔:</span> ${clean(x['発動間隔'])}　<span class="label">基礎連鎖:</span> ${clean(x['基礎連鎖'])}　<span class="label">連鎖順:</span> ${clean(x['連鎖順'])}</div><div class="row"><span class="label">技能:</span> ${skills}</div><div class="row"><span class="label">縁:</span> ${ties}</div><button type="button" class="speed-link-btn" onclick="openSpeedCalc('${r}')">この武将を戦法速度計算へ</button></div>`}).join('');$('#details').innerHTML=blocks||'<span class="placeholder">各枠をタップして武将を選択してください</span>'}
 function renderFormationTabs(){
