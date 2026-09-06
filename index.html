@@ -391,12 +391,39 @@ function formationSkillCount(name){return effectiveSkillCount(name)}
 function makeSpeedTransfer(role){
   const x=selected[role]; if(!x)return null;
   const levelValue=(skill,vals)=>{const c=Math.min(3,formationSkillCount(skill));return c?vals[c-1]:0};
-  const uniqueNames=['水計','神算','看破','迅速','才略','武烈','一念','剣抜','耀翼','戦速加速','霊剣','彼方'];
-  const gaugeNames=['神気','勇士','虎威'];
+  const unrestrictedUniqueNames=['水計','戦速加速','霊剣','彼方'];
+  const commanderOrLinkedDeputyNames=['看破','迅速','才略','武烈','一念','耀翼'];
   // 速度計算へ渡す所持技能は通常編制7枠を基準にする。旗持は3人共通時のLv+1補正のみ。
   const allBases=new Set(roles.map(r=>selected[r]).filter(Boolean).flatMap(getSkills).map(skillBaseName));
+  const commander=selected['大将'];
+  const commanderBases=new Set(commander?getSkills(commander).map(skillBaseName):[]);
+  const hasAtLeastTwoSharedTiesWithCommander=(deputy)=>{
+    if(!commander||!deputy)return false;
+    const commanderTies=new Set(getTies(commander));
+    return getTies(deputy).filter(t=>commanderTies.has(t)).length>=2;
+  };
+  const qualifyingDeputies=['副将1','副将2']
+    .map(r=>selected[r])
+    .filter(d=>d&&hasAtLeastTwoSharedTiesWithCommander(d));
+  const qualifyingDeputyBases=new Set(qualifyingDeputies.flatMap(getSkills).map(skillBaseName));
+
+  // 無条件系は通常編制7枠のいずれかが所持していれば反映。
+  const unique=unrestrictedUniqueNames.filter(n=>allBases.has(n));
+  // 神算は大将配置時のみ有効。
+  if(commanderBases.has('神算'))unique.push('神算');
+  // 看破・迅速・才略・武烈・一念・耀翼は、大将所持または
+  // 大将と共通する縁が2個以上ある副将1/2が所持している場合のみ有効。
+  commanderOrLinkedDeputyNames.forEach(n=>{
+    if(commanderBases.has(n)||qualifyingDeputyBases.has(n))unique.push(n);
+  });
+  // 剣抜・勇士・神気は大将配置時のみ有効。
+  if(commanderBases.has('剣抜'))unique.push('剣抜');
+  const gauge=[];
+  if(commanderBases.has('神気'))gauge.push('神気');
+  if(commanderBases.has('勇士'))gauge.push('勇士');
+  if(allBases.has('虎威'))gauge.push('虎威');
   const interval=Number(x['発動間隔']);
-  return {app:'hadou-formation-speed-link',version:2,formation:activeFormation+1,branch,role,generalName:x['武将名'],B:[25,30,35].includes(interval)?interval:null,C:levelValue('機略',[5,8,15]),H:levelValue('速攻',[3,6,10]),unique:uniqueNames.filter(n=>allBases.has(n)),gauge:gaugeNames.filter(n=>allBases.has(n)),createdAt:new Date().toISOString()};
+  return {app:'hadou-formation-speed-link',version:3,formation:activeFormation+1,branch,role,generalName:x['武将名'],B:[25,30,35].includes(interval)?interval:null,C:levelValue('機略',[5,8,15]),H:levelValue('速攻',[3,6,10]),unique,gauge,createdAt:new Date().toISOString()};
 }
 function openSpeedCalc(role){
   const data=makeSpeedTransfer(role); if(!data)return;
