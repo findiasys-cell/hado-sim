@@ -409,6 +409,11 @@ function applyHadouTransfer(d){
   if([0,5,8,15].includes(Number(d.C)))document.getElementById('C').value=String(d.C);
   if([0,3,6,10].includes(Number(d.H)))document.getElementById('H').value=String(d.H);
   setUniqueByNames(d.unique);
+  const gaugeWanted=new Set(d.gauge||[]);
+  document.getElementById('shinkiOn').checked=gaugeWanted.has('神気');
+  document.getElementById('yuushiOn').checked=gaugeWanted.has('勇士');
+  document.getElementById('koiOn').checked=gaugeWanted.has('虎威');
+  // 勇士と神気は速度計算側の既存仕様どおり排他。両方ある場合は勇士を優先する。
   normalizeExclusiveState();syncReiken();syncKanata();syncSensoku();syncGaugeUI();calc();
   const banner=document.getElementById('transferBanner');
   if(banner){

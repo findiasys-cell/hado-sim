@@ -392,9 +392,11 @@ function makeSpeedTransfer(role){
   const x=selected[role]; if(!x)return null;
   const levelValue=(skill,vals)=>{const c=Math.min(3,formationSkillCount(skill));return c?vals[c-1]:0};
   const uniqueNames=['水計','神算','看破','迅速','才略','武烈','一念','剣抜','耀翼','戦速加速','霊剣','彼方'];
+  const gaugeNames=['神気','勇士','虎威'];
+  // 速度計算へ渡す所持技能は通常編制7枠を基準にする。旗持は3人共通時のLv+1補正のみ。
   const allBases=new Set(roles.map(r=>selected[r]).filter(Boolean).flatMap(getSkills).map(skillBaseName));
   const interval=Number(x['発動間隔']);
-  return {app:'hadou-formation-speed-link',version:1,formation:activeFormation+1,branch,role,generalName:x['武将名'],B:[25,30,35].includes(interval)?interval:null,C:levelValue('機略',[5,8,15]),H:levelValue('速攻',[3,6,10]),unique:uniqueNames.filter(n=>allBases.has(n)),createdAt:new Date().toISOString()};
+  return {app:'hadou-formation-speed-link',version:2,formation:activeFormation+1,branch,role,generalName:x['武将名'],B:[25,30,35].includes(interval)?interval:null,C:levelValue('機略',[5,8,15]),H:levelValue('速攻',[3,6,10]),unique:uniqueNames.filter(n=>allBases.has(n)),gauge:gaugeNames.filter(n=>allBases.has(n)),createdAt:new Date().toISOString()};
 }
 function openSpeedCalc(role){
   const data=makeSpeedTransfer(role); if(!data)return;
