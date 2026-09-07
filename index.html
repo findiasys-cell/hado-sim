@@ -208,25 +208,6 @@ body{background:radial-gradient(circle at 50% -8%,#34546b 0,#10283a 28%,#091723 
 }
 </style>
 
-
-<style id="share-feature-prototype">
-.save-btn.share{grid-column:1/-1;border-color:#2f8a87;color:#d8fffb;background:linear-gradient(#164a4b,#0d3033)}
-.share-modal{position:fixed;inset:0;z-index:60;display:none;align-items:flex-end;background:rgba(0,0,0,.72)}
-.share-modal.open{display:flex}
-.share-sheet{width:100%;max-height:86vh;overflow:auto;background:#102033;border:1px solid #45627c;border-bottom:0;border-radius:18px 18px 0 0;padding:14px;box-shadow:0 -10px 35px rgba(0,0,0,.35)}
-.share-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:10px}
-.share-head h3{margin:0;font-size:16px}
-.share-close{border:1px solid #4b6074;background:#22374a;color:#fff;border-radius:9px;padding:7px 11px;font-weight:800}
-.share-desc{font-size:11px;line-height:1.6;color:#9eb0c1;margin:0 0 10px}
-.share-preview{border:1px solid #314b63;background:#091724;border-radius:10px;padding:10px;white-space:pre-wrap;word-break:break-word;color:#dbe7f0;font-size:11px;line-height:1.65;max-height:32vh;overflow:auto}
-.share-actions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-top:10px}
-.share-action{border:1px solid #45647e;background:linear-gradient(#173650,#102538);color:#e9f4ff;border-radius:10px;padding:10px 6px;font-size:11px;font-weight:900}
-.share-action.primary{border-color:#3b8986;background:linear-gradient(#175354,#103437);color:#e0fffb}
-.share-action.text-copy{grid-column:1/-1;border-color:#786548;color:#ffe7ac;background:linear-gradient(#43351f,#282115)}
-.share-result{min-height:18px;margin-top:8px;font-size:10px;color:#96d8d4;text-align:center}
-@media(max-width:520px){.share-sheet{padding:12px}.share-actions{gap:6px}.share-action{padding:10px 4px;font-size:10px}}
-</style>
-
 </head>
 <body>
 <div class="app">
@@ -242,7 +223,7 @@ body{background:radial-gradient(circle at 50% -8%,#34546b 0,#10283a 28%,#091723 
 
   <div class="reset-actions" aria-label="リセット操作"><button id="resetCurrent" class="reset-btn current">表示中の編制をリセット</button><button id="resetAll" class="reset-btn all">全編制をリセット</button></div>
 
-  <div class="save-actions" aria-label="編制の一時保存・出力・読み出し"><button id="saveFormation" class="save-btn save">一時保存</button><button id="loadFormation" class="save-btn load">保存を読み出し</button><button id="exportFormation" class="save-btn export">ファイル出力</button><button id="importFormation" class="save-btn import">ファイル入力</button><button id="shareFormation" class="save-btn share">現在の編制を共有</button><input id="importFormationFile" type="file" accept="application/json,.json" hidden><div id="saveStatus" class="save-status"></div></div>
+  <div class="save-actions" aria-label="編制の一時保存・出力・読み出し"><button id="saveFormation" class="save-btn save">一時保存</button><button id="loadFormation" class="save-btn load">保存を読み出し</button><button id="exportFormation" class="save-btn export">ファイル出力</button><button id="importFormation" class="save-btn import">ファイル入力</button><input id="importFormationFile" type="file" accept="application/json,.json" hidden><div id="saveStatus" class="save-status"></div></div>
 
   <div class="formation">
     <div class="side-mark attack">攻</div><div class="side-mark defense">防</div>
@@ -298,24 +279,6 @@ body{background:radial-gradient(circle at 50% -8%,#34546b 0,#10283a 28%,#091723 
   <div id="chainsPanel" class="section tab-panel"><h2>上下接続の連鎖率</h2><div id="tsuienEditor" class="feature-editor"></div><div id="chains" class="chain-list"><span class="placeholder">上下でつながる武将を選択すると連鎖率を計算します</span></div></div>
   <div id="abilityPanel" class="section tab-panel"><h2>能力補正</h2><div id="abilityAdjustments"><span class="placeholder">能力補正の集計表示は今後この欄に反映します</span></div></div>
   <div id="detailsPanel" class="section tab-panel"><h2>武将別データ</h2><div id="details" class="detail-list"><span class="placeholder">各枠をタップして武将を選択してください</span></div></div>
-</div>
-
-
-<div id="shareModal" class="share-modal" aria-hidden="true">
-  <div class="share-sheet" role="dialog" aria-modal="true" aria-labelledby="shareTitle">
-    <div class="share-head">
-      <h3 id="shareTitle">現在の編制を共有</h3>
-      <button id="closeShareModal" type="button" class="share-close">閉じる</button>
-    </div>
-    <p class="share-desc">表示中の1編制だけを共有します。武将配置・兵科・兵装・UR★4・皆伝・追縁を含みます。</p>
-    <div id="sharePreview" class="share-preview"></div>
-    <div class="share-actions">
-      <button id="nativeShareFormation" type="button" class="share-action primary">URLを共有</button>
-      <button id="copyShareUrl" type="button" class="share-action">URLをコピー</button>
-      <button id="copyShareText" type="button" class="share-action text-copy">編制内容をテキストでコピー</button>
-    </div>
-    <div id="shareResult" class="share-result"></div>
-  </div>
 </div>
 
 <div id="modal" class="modal"><div class="sheet">
@@ -641,7 +604,7 @@ const SKILL_EFFECT_DB={
   '兵家':{__dynamic:'sCount',攻撃:[2,3,4],防御:[2,3,4]},
   '慧眼':{__dynamic:'saCount',攻撃:[2,3,4],防御:[2,3,4]}
 };
-const ABILITY_ORDER=['兵力','攻撃','防御','武勇','知略','破壊','機動','射程','調達','攻撃間隔','負傷兵生存','会心発生率','会心威力','激心発生率','激心威力','戦法発動速度','敵大名家領土行動速度低下緩和'];
+const ABILITY_ORDER=['兵力','攻撃','防御','武勇','知略','破壊','機動','射程','調達','攻撃間隔','戦法発動間隔','負傷兵生存','会心発生率','会心威力','激心発生率','激心威力','敵大名家領土行動速度低下緩和'];
 
 const BRANCH_BASE_STATS={
   '足軽':{機動:120,射程:1.0,攻撃間隔:5.00},
@@ -658,6 +621,29 @@ function currentBranchBaseStats(){
   const name=equippedBranchName(branch,armor);
   return {name,stats:BRANCH_BASE_STATS[name]||null};
 }
+const BATTLE_SPEED_EFFECT_VALUES={
+  '水計':8,'戦速加速':5,'霊剣':8,'彼方':3,'神算':20,'看破':10,'迅速':10,
+  '才略':10,'武烈':10,'一念':10,'耀翼':10,'剣抜':10
+};
+function currentBattleIntervalData(){
+  const commander=selected['大将'];
+  if(!commander)return null;
+  const base=Number(commander['発動間隔']);
+  if(!Number.isFinite(base)||base<=0)return null;
+  const transfer=makeSpeedTransfer('大将');
+  if(!transfer)return {base,bonus:0,result:base,breakdown:[]};
+  let bonus=(Number(transfer.C)||0)+(Number(transfer.H)||0);
+  const breakdown=[];
+  if(transfer.C){breakdown.push(`機略 +${formatAbilityNumber(transfer.C)}%`);}
+  if(transfer.H){breakdown.push(`速攻 +${formatAbilityNumber(transfer.H)}%`);}
+  (transfer.unique||[]).forEach(name=>{
+    const v=BATTLE_SPEED_EFFECT_VALUES[name]||0;
+    if(v){bonus+=v;breakdown.push(`${name} +${formatAbilityNumber(v)}%`);}
+  });
+  const result=base/(1+bonus/100);
+  return {base,bonus,result,breakdown};
+}
+
 
 
 function skillListEffective(name,speedActive){
@@ -709,31 +695,47 @@ function renderAbilityAdjustments(speedActiveOverride){
     if(!added&&targets.length)missing.push(`${skillLevelLabel(name,lv)}：補正値未登録`);
   });
   const baseInfo=currentBranchBaseStats();
-  const baseTargets=new Set(['機動','射程','攻撃間隔']);
-  // 機動・射程・攻撃間隔は、技能補正が発生して初期値から変化する場合だけ表示する
-  const displayTargets=ABILITY_ORDER.filter(k=>totals.has(k));
+  const battleInterval=currentBattleIntervalData();
+
+  // 「戦法発動速度」は内部では補正率として保持し、表示は計算後の「戦法発動間隔」にする
+  if(totals.has('戦法発動速度'))totals.delete('戦法発動速度');
+
+  const displayTargets=ABILITY_ORDER.filter(k=>{
+    if(k==='戦法発動間隔')return !!(battleInterval&&battleInterval.bonus>0);
+    return totals.has(k);
+  });
+
   const cards=displayTargets.map(k=>{
+    if(k==='攻撃間隔'){
+      const speedBonus=Number(totals.get(k)||0);
+      if(!baseInfo.stats)return '';
+      const base=Number(baseInfo.stats['攻撃間隔']);
+      const result=base/(1+speedBonus/100);
+      const rows=(breakdown.get(k)||[]).map(s=>`<div class="ability-breakdown-row">${escapeHtml(s)}</div>`).join('');
+      return `<div class="ability-card"><div class="ability-name">攻撃間隔</div><div class="ability-base">初期値（${escapeHtml(baseInfo.name)}） <b>${base.toFixed(2)}秒</b></div><div class="ability-value">${result.toFixed(2)}秒</div><div class="ability-mod">計算後（攻撃速度 +${formatAbilityNumber(speedBonus)}%）</div>${rows?`<div class="ability-breakdown">${rows}</div>`:''}</div>`;
+    }
+    if(k==='戦法発動間隔'){
+      const rows=(battleInterval.breakdown||[]).map(s=>`<div class="ability-breakdown-row">${escapeHtml(s)}</div>`).join('');
+      return `<div class="ability-card"><div class="ability-name">戦法発動間隔</div><div class="ability-base">初期値（大将） <b>${Number(battleInterval.base).toFixed(2)}秒</b></div><div class="ability-value">${Number(battleInterval.result).toFixed(2)}秒</div><div class="ability-mod">計算後（戦法速度 +${formatAbilityNumber(battleInterval.bonus)}%）</div>${rows?`<div class="ability-breakdown">${rows}</div>`:''}</div>`;
+    }
+
     const unit=k==='射程'?'':'%';
     const rows=(breakdown.get(k)||[]).map(s=>`<div class="ability-breakdown-row">${escapeHtml(s)}</div>`).join('');
-    const hasMod=totals.has(k);
     let baseHtml='';
-    if(baseTargets.has(k)){
+    if(k==='機動'||k==='射程'){
       if(baseInfo.stats){
         const base=baseInfo.stats[k];
-        const shown=k==='攻撃間隔'?Number(base).toFixed(2)+'秒':k==='射程'?Number(base).toFixed(1):formatAbilityNumber(base);
+        const shown=k==='射程'?Number(base).toFixed(1):formatAbilityNumber(base);
         baseHtml=`<div class="ability-base">初期値（${escapeHtml(baseInfo.name)}） <b>${shown}</b></div>`;
       }else{
         baseHtml=`<div class="ability-base">初期値（${escapeHtml(baseInfo.name)}） <b>未設定</b></div>`;
       }
     }
-    const valueHtml=hasMod
-      ?`<div class="ability-value">+${formatAbilityNumber(totals.get(k))}${unit}</div><div class="ability-mod">技能補正</div>`
-      :`<div class="ability-value no-mod">±0${unit}</div><div class="ability-mod">技能補正</div>`;
-    return `<div class="ability-card"><div class="ability-name">${escapeHtml(k)}</div>${baseHtml}${valueHtml}${rows?`<div class="ability-breakdown">${rows}</div>`:''}</div>`;
+    return `<div class="ability-card"><div class="ability-name">${escapeHtml(k)}</div>${baseHtml}<div class="ability-value">+${formatAbilityNumber(totals.get(k))}${unit}</div><div class="ability-mod">技能補正</div>${rows?`<div class="ability-breakdown">${rows}</div>`:''}</div>`;
   }).join('');
   const missingHtml=missing.length?`<div class="ability-unregistered"><b>DB未登録：</b> ${missing.map(escapeHtml).join(' / ')}</div>`:'';
   const baseNote=!baseInfo.stats?`<div class="ability-unregistered"><b>${escapeHtml(baseInfo.name)}</b> の機動・射程・攻撃間隔の初期値は未設定です。</div>`:'';
-  el.innerHTML=`<div class="ability-summary">${cards}</div>${missingHtml}${baseNote}<div class="ability-db-note">機動・射程・攻撃間隔は、現在の兵科の初期値から技能補正による変更がある場合のみ表示します。技能補正は、技能一覧で有効になっていて現在の技能DBに補正値が登録されている技能のみを仮集計しています。</div>`;
+  el.innerHTML=`<div class="ability-summary">${cards}</div>${missingHtml}${baseNote}<div class="ability-db-note">機動・射程は初期値から技能補正による変更がある場合のみ表示します。攻撃間隔と戦法発動間隔は、初期値に有効な速度補正を反映した計算後の秒数を表示します。</div>`;
 }
 function formatAbilityNumber(v){
   const n=Math.round((Number(v)||0)*10)/10;
@@ -1160,147 +1162,6 @@ function importFormationData(file){
   reader.onerror=()=>{alert('編制ファイルを読み込めませんでした。');$('#importFormationFile').value='';};
   reader.readAsText(file,'utf-8');
 }
-
-const SHARE_PARAM='share';
-let currentShareUrl='';
-let currentShareText='';
-
-function makeCurrentFormationShareData(){
-  formationStates[activeFormation].branch=branch;
-  formationStates[activeFormation].armor=armor;
-  formationStates[activeFormation].selected=selected;
-  const state=formationStates[activeFormation];
-  return {
-    app:'信長覇道 編制シミュレーター',
-    type:'formation-share',
-    version:1,
-    branch:state.branch,
-    armor:!!state.armor,
-    selected:Object.fromEntries(allRoles.map(role=>{
-      const x=state.selected[role];
-      return [role,x?{
-        name:x['武将名'],
-        star4:x['レアリティ']==='UR'?!!x.__star4:null,
-        kaidenSkill:x.__kaidenSkill||'',
-        tsuienTie:x['レアリティ']==='UR'?(x.__tsuienTie||''):''
-      }:null];
-    }))
-  };
-}
-function encodeShareData(data){
-  const bytes=new TextEncoder().encode(JSON.stringify(data));
-  let binary='';
-  for(const b of bytes)binary+=String.fromCharCode(b);
-  return btoa(binary).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'');
-}
-function decodeShareData(value){
-  const b64=value.replace(/-/g,'+').replace(/_/g,'/');
-  const padded=b64+'='.repeat((4-b64.length%4)%4);
-  const binary=atob(padded);
-  const bytes=Uint8Array.from(binary,c=>c.charCodeAt(0));
-  return JSON.parse(new TextDecoder().decode(bytes));
-}
-function buildShareUrl(data){
-  const url=new URL(location.href);
-  url.searchParams.set(SHARE_PARAM,encodeShareData(data));
-  url.hash='';
-  return url.toString();
-}
-function currentFormationShareText(){
-  const state=formationStates[activeFormation];
-  const shownBranch=equippedBranchName(state.branch,!!state.armor);
-  const lines=['信長覇道 編制シミュレーター',`編制${activeFormation+1} / 兵科：${shownBranch}`];
-  allRoles.forEach(role=>{
-    const x=state.selected[role];
-    if(!x)return;
-    let row=`${role}：${x['武将名']}`;
-    if(x['レアリティ']==='UR'&&x.__star4)row+=' ★4';
-    if(x.__kaidenSkill)row+=` / 皆伝：${x.__kaidenSkill}`;
-    if(x['レアリティ']==='UR'&&x.__tsuienTie)row+=` / 追縁：${x.__tsuienTie}`;
-    lines.push(row);
-  });
-  return lines.join('\n');
-}
-function setShareResult(msg){const el=$('#shareResult');if(el)el.textContent=msg||''}
-function openShareModal(){
-  const data=makeCurrentFormationShareData();
-  currentShareUrl=buildShareUrl(data);
-  currentShareText=currentFormationShareText();
-  $('#sharePreview').textContent=currentShareText;
-  setShareResult('');
-  $('#shareModal').classList.add('open');
-  $('#shareModal').setAttribute('aria-hidden','false');
-}
-function closeShareModal(){
-  $('#shareModal').classList.remove('open');
-  $('#shareModal').setAttribute('aria-hidden','true');
-}
-async function copyTextCompat(value){
-  if(navigator.clipboard&&window.isSecureContext){await navigator.clipboard.writeText(value);return}
-  const ta=document.createElement('textarea');
-  ta.value=value;
-  ta.style.cssText='position:fixed;left:-9999px;top:0;opacity:0';
-  document.body.appendChild(ta);
-  ta.focus();ta.select();
-  const ok=document.execCommand('copy');
-  ta.remove();
-  if(!ok)throw new Error('copy failed');
-}
-async function shareCurrentFormationNative(){
-  if(!currentShareUrl)openShareModal();
-  try{
-    if(navigator.share){
-      await navigator.share({title:'信長覇道 編制シミュレーター',text:currentShareText,url:currentShareUrl});
-      setShareResult('共有メニューを開きました');
-    }else{
-      await copyTextCompat(currentShareUrl);
-      setShareResult('共有URLをコピーしました');
-    }
-  }catch(e){
-    if(e&&e.name==='AbortError')return;
-    setShareResult('共有できませんでした。URLコピーをお試しください。');
-  }
-}
-function applySharedFormation(data){
-  if(!data||data.type!=='formation-share'||!data.selected)throw new Error('invalid share');
-  const nextSelected=makeSelected();
-  for(const role of allRoles){
-    const entry=data.selected[role];
-    const name=typeof entry==='string'?entry:entry?.name;
-    const base=name?DB.find(x=>x['武将名']===name)||null:null;
-    if(!base){nextSelected[role]=null;continue}
-    nextSelected[role]=base['レアリティ']==='UR'
-      ?{...base,__selectedInstance:true,__star4:typeof entry==='object'?!!entry.star4:false,__kaidenSkill:typeof entry==='object'?(entry.kaidenSkill||''):'',__tsuienTie:typeof entry==='object'?(entry.tsuienTie||''):''}
-      :{...base,__kaidenSkill:typeof entry==='object'?(entry.kaidenSkill||''):''};
-  }
-  formationStates[activeFormation].branch=branches[data.branch]?data.branch:'騎馬';
-  formationStates[activeFormation].armor=!!data.armor;
-  formationStates[activeFormation].selected=nextSelected;
-  branch=formationStates[activeFormation].branch;
-  armor=!!formationStates[activeFormation].armor;
-  selected=formationStates[activeFormation].selected;
-  updateBranchDisplay();
-  renderAll();
-  setSaveStatus('共有された編制を読み込みました');
-}
-function handleIncomingShare(){
-  const url=new URL(location.href);
-  const encoded=url.searchParams.get(SHARE_PARAM);
-  if(!encoded)return;
-  url.searchParams.delete(SHARE_PARAM);
-  history.replaceState(null,'',url.pathname+url.search+url.hash);
-  try{
-    const data=decodeShareData(encoded);
-    const previewBranch=equippedBranchName(data.branch||'騎馬',!!data.armor);
-    const names=allRoles.map(r=>data.selected?.[r]?.name||data.selected?.[r]).filter(Boolean);
-    const summary=`兵科：${previewBranch}\n武将：${names.length?names.join(' / '):'未配置'}`;
-    if(!confirm(`共有された編制を読み込みますか？\n\n${summary}\n\n現在表示中の編制${activeFormation+1}を置き換えます。`))return;
-    applySharedFormation(data);
-  }catch(e){
-    alert('共有URLの編制データを読み込めませんでした。');
-  }
-}
-
 function showExistingSaveStatus(){
   try{const raw=localStorage.getItem(SAVE_KEY);if(!raw)return;const data=JSON.parse(raw);if(data.savedAt){const d=new Date(data.savedAt);if(!isNaN(d))setSaveStatus(`保存あり：${d.toLocaleString('ja-JP')}`);}}catch(e){}
 }
@@ -1319,12 +1180,12 @@ $('#excludeFlagDomestic').addEventListener('change',e=>{excludeFlagDomesticSkill
 $('#closeModal').onclick=closePicker;$('#modal').addEventListener('click',e=>{if(e.target===$('#modal'))closePicker()});$('#search').addEventListener('input',renderCandidates);
 $('#favoriteGeneralFilter').addEventListener('click',e=>{const b=e.target.closest('button[data-favorite-general]');if(!b)return;favoriteGeneralOnly=b.dataset.favoriteGeneral==='fav';$$('#favoriteGeneralFilter button').forEach(x=>x.classList.toggle('active',x===b));renderCandidates();});
 $('#showFavoriteSkillsOnly').addEventListener('change',e=>{showFavoriteSkillsOnly=e.target.checked;renderSummary();});
-$$('.filterbar:not(.tiefilterbar):not(.commander-skill-filter):not(.deputy-skill-filter):not(.assist-skill-filter) button').forEach(b=>b.onclick=()=>{filter=b.dataset.filter;$$('.filterbar:not(.tiefilterbar):not(.commander-skill-filter):not(.deputy-skill-filter):not(.assist-skill-filter) button').forEach(x=>x.classList.toggle('active',x===b));renderCandidates()});$$('.commander-skill-filter button').forEach(b=>b.onclick=()=>{commanderSkill=b.dataset.commanderSkill||'';$$('.commander-skill-filter button').forEach(x=>x.classList.toggle('active',x===b));renderCandidates()});$$('.deputy-skill-filter button').forEach(b=>b.onclick=()=>{deputySkill=b.dataset.deputySkill||'';$$('.deputy-skill-filter button').forEach(x=>x.classList.toggle('active',x===b));renderCandidates()});$$('.assist-skill-filter button').forEach(b=>b.onclick=()=>{assistSkill=b.dataset.assistSkill||'';$$('.assist-skill-filter button').forEach(x=>x.classList.toggle('active',x===b));renderCandidates()});$$('.tiefilterbar button').forEach(b=>b.onclick=()=>{minTieMatches=+b.dataset.minTies;$$('.tiefilterbar button').forEach(x=>x.classList.toggle('active',x===b));renderCandidates()});$$('.sortbar button').forEach(b=>b.onclick=()=>{sortMode=b.dataset.sort;$$('.sortbar button').forEach(x=>x.classList.toggle('active',x===b));renderCandidates()});$('#resetCurrent').onclick=resetCurrentFormation;$('#resetAll').onclick=resetAllFormations;$('#saveFormation').onclick=saveFormationData;$('#shareFormation').onclick=openShareModal;$('#closeShareModal').onclick=closeShareModal;$('#shareModal').addEventListener('click',e=>{if(e.target===$('#shareModal'))closeShareModal()});$('#nativeShareFormation').onclick=shareCurrentFormationNative;$('#copyShareUrl').onclick=async()=>{try{await copyTextCompat(currentShareUrl||buildShareUrl(makeCurrentFormationShareData()));setShareResult('共有URLをコピーしました')}catch(e){setShareResult('URLをコピーできませんでした')}};$('#copyShareText').onclick=async()=>{try{await copyTextCompat(currentShareText||currentFormationShareText());setShareResult('編制内容をコピーしました')}catch(e){setShareResult('編制内容をコピーできませんでした')}};$('#loadFormation').onclick=loadFormationData;$('#exportFormation').onclick=exportFormationData;$('#importFormation').onclick=()=>$('#importFormationFile').click();$('#importFormationFile').addEventListener('change',e=>importFormationData(e.target.files&&e.target.files[0]));$('#branchBtn').onclick=()=>{renderBranchMenu();$('#branchMenu').classList.add('open')};$('#branchMenu').addEventListener('click',e=>{if(e.target===$('#branchMenu'))$('#branchMenu').classList.remove('open')});
+$$('.filterbar:not(.tiefilterbar):not(.commander-skill-filter):not(.deputy-skill-filter):not(.assist-skill-filter) button').forEach(b=>b.onclick=()=>{filter=b.dataset.filter;$$('.filterbar:not(.tiefilterbar):not(.commander-skill-filter):not(.deputy-skill-filter):not(.assist-skill-filter) button').forEach(x=>x.classList.toggle('active',x===b));renderCandidates()});$$('.commander-skill-filter button').forEach(b=>b.onclick=()=>{commanderSkill=b.dataset.commanderSkill||'';$$('.commander-skill-filter button').forEach(x=>x.classList.toggle('active',x===b));renderCandidates()});$$('.deputy-skill-filter button').forEach(b=>b.onclick=()=>{deputySkill=b.dataset.deputySkill||'';$$('.deputy-skill-filter button').forEach(x=>x.classList.toggle('active',x===b));renderCandidates()});$$('.assist-skill-filter button').forEach(b=>b.onclick=()=>{assistSkill=b.dataset.assistSkill||'';$$('.assist-skill-filter button').forEach(x=>x.classList.toggle('active',x===b));renderCandidates()});$$('.tiefilterbar button').forEach(b=>b.onclick=()=>{minTieMatches=+b.dataset.minTies;$$('.tiefilterbar button').forEach(x=>x.classList.toggle('active',x===b));renderCandidates()});$$('.sortbar button').forEach(b=>b.onclick=()=>{sortMode=b.dataset.sort;$$('.sortbar button').forEach(x=>x.classList.toggle('active',x===b));renderCandidates()});$('#resetCurrent').onclick=resetCurrentFormation;$('#resetAll').onclick=resetAllFormations;$('#saveFormation').onclick=saveFormationData;$('#loadFormation').onclick=loadFormationData;$('#exportFormation').onclick=exportFormationData;$('#importFormation').onclick=()=>$('#importFormationFile').click();$('#importFormationFile').addEventListener('change',e=>importFormationData(e.target.files&&e.target.files[0]));$('#branchBtn').onclick=()=>{renderBranchMenu();$('#branchMenu').classList.add('open')};$('#branchMenu').addEventListener('click',e=>{if(e.target===$('#branchMenu'))$('#branchMenu').classList.remove('open')});
 $$('.section-tab').forEach(btn=>btn.addEventListener('click',()=>{
   $$('.section-tab').forEach(b=>b.classList.toggle('active',b===btn));
   $$('.tab-panel').forEach(p=>p.classList.toggle('active',p.id===btn.dataset.panel));
 }));
 renderDBNote();
-renderAll();showExistingSaveStatus();handleIncomingShare();
+renderAll();showExistingSaveStatus();
 </script>
 </body></html>
