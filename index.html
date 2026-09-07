@@ -16,6 +16,82 @@ linear-gradient(#163047,#081622);min-height:560px;box-shadow:inset 0 0 70px #000
 .side-mark{position:absolute;top:70px;z-index:1;color:rgba(255,255,255,.13);font-family:"Hiragino Mincho ProN","Yu Mincho",YuMincho,"MS PMincho",serif;font-size:126px;font-weight:900;line-height:1;text-shadow:0 2px 10px #0009;pointer-events:none;transform:rotate(-7deg)}.side-mark.attack{left:18px}.side-mark.defense{right:20px;transform:rotate(7deg)}
  .formation-lines{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:0;overflow:visible}.formation-lines .glow{fill:none;stroke:rgba(93,205,220,.18);stroke-width:1.8;vector-effect:non-scaling-stroke}.formation-lines .line{fill:none;stroke:rgba(101,196,211,.70);stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round;vector-effect:non-scaling-stroke;filter:url(#lineGlow)}.formation-lines .left-line{stroke:rgba(213,137,104,.68)}.formation-lines .node{fill:#d9c27b;stroke:#24384b;stroke-width:.7;vector-effect:non-scaling-stroke}.formation-lines .joint{fill:#7bc3cf;stroke:#173348;stroke-width:.7;vector-effect:non-scaling-stroke}
 .slot{position:absolute;z-index:2;width:116px;min-height:88px;border:2px solid #a6946b;border-radius:18px;background:linear-gradient(#263b53,#1a2a3e);color:#fff;padding:9px 7px;text-align:center;box-shadow:0 2px 8px #0007,inset 0 0 0 2px #152235;cursor:pointer;transform:translateX(-50%)}.slot.empty{color:#c6cfda}.slot .role{font-size:12px;color:#d8d8d8}.slot .name{font-size:14px;font-weight:800;margin-top:6px;line-height:1.25}.slot .apt{font-size:11px;margin-top:4px;color:#f4d98a}.slot .clear{position:absolute;right:-6px;top:-7px;width:22px;height:22px;border:0;border-radius:50%;background:#e25135;color:#fff;font-weight:800;display:none}.slot.filled .clear{display:block}
+.slot .tactic-bar{
+  position:absolute;
+  left:50%;
+  bottom:-29px;
+  transform:translateX(-50%);
+  width:max-content;
+  min-width:128px;
+  max-width:164px;
+  min-height:25px;
+  display:none;
+  grid-template-columns:24px minmax(0,1fr) 24px;
+  align-items:center;
+  border:2px solid #b99a55;
+  border-radius:7px;
+  background:linear-gradient(180deg,#274f7d 0%,#17385f 48%,#0c294c 100%);
+  box-shadow:0 2px 7px #0009,inset 0 0 0 1px rgba(255,255,255,.16);
+  overflow:hidden;
+  z-index:5;
+  pointer-events:auto;
+}
+.slot.filled .tactic-bar{display:grid}
+.slot .tactic-name{
+  min-width:0;
+  padding:4px 2px;
+  color:#fff;
+  font-family:"Hiragino Mincho ProN","Yu Mincho",YuMincho,"MS PMincho",serif;
+  font-size:10px;
+  line-height:1.1;
+  font-weight:900;
+  white-space:normal;
+  overflow:visible;
+  text-overflow:clip;
+  word-break:keep-all;
+  overflow-wrap:anywhere;
+  max-width:112px;
+  text-shadow:0 1px 2px #000;
+}
+.slot .chain-order-num{
+  height:100%;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  background:linear-gradient(180deg,#f2d7a2,#c99b62);
+  color:#fff;
+  font-size:13px;
+  font-weight:1000;
+  text-shadow:0 1px rgba(255,255,255,.45);
+}
+.slot .chain-order-num:empty{background:rgba(12,29,48,.42)}
+.slot .chain-order-num.left{
+  border-right:1px solid rgba(71,46,25,.55);
+  background:linear-gradient(180deg,#b85b45,#713225);
+}
+.slot .chain-order-num.right{
+  border-left:1px solid rgba(27,70,96,.7);
+  background:linear-gradient(180deg,#347ea6,#1b4b70);
+}
+.slot .chain-order-num:empty{
+  background:rgba(12,29,48,.42)!important;
+}
+.slot .tactic-bar.tactic-long .tactic-name{font-size:9px;line-height:1.05}
+.slot .tactic-bar.tactic-very-long{max-width:176px}
+.slot .tactic-bar.tactic-very-long .tactic-name{font-size:8px;line-height:1.05}
+.slot .tactic-bar:focus-visible{outline:2px solid #ffe28a;outline-offset:2px}
+.detail.jump-highlight{animation:detailJumpHighlight 1.4s ease}
+@keyframes detailJumpHighlight{
+  0%{box-shadow:0 0 0 2px #f0cf75,0 0 22px rgba(240,207,117,.65)}
+  100%{box-shadow:none}
+}
+@media(max-width:560px){
+  .slot .tactic-bar{min-width:122px;max-width:154px;grid-template-columns:22px minmax(0,1fr) 22px}
+  .slot .tactic-bar.tactic-very-long{max-width:164px}
+  .slot .tactic-name{font-size:9px}
+  .slot .tactic-bar.tactic-long .tactic-name{font-size:8px}
+  .slot .tactic-bar.tactic-very-long .tactic-name{font-size:7.5px}
+}
 /* 参考画像に近い段配置 */
 .main{left:50%;top:28px}.sub1{left:28%;top:215px}.sub2{left:72%;top:215px}.assist1{left:12%;bottom:34px}.assist2{left:37%;bottom:34px}.assist3{left:63%;bottom:34px}.assist4{left:88%;bottom:34px}
 .flag-group{position:absolute;z-index:3;left:50%;top:172px;transform:translateX(-50%);width:104px;padding:8px;border:1px solid rgba(154,132,87,.42);border-radius:12px;background:linear-gradient(180deg,rgba(23,30,43,.90),rgba(12,20,32,.82));box-shadow:0 5px 18px #0008,inset 0 0 0 1px rgba(255,255,255,.04)}
@@ -208,6 +284,121 @@ body{background:radial-gradient(circle at 50% -8%,#34546b 0,#10283a 28%,#091723 
 }
 </style>
 
+
+<style id="general-detail-overlay-style">
+.general-detail-overlay{
+  position:fixed;inset:0;z-index:80;display:none;
+  align-items:center;justify-content:center;
+  padding:18px;background:rgba(0,0,0,.78);
+  backdrop-filter:blur(3px);
+}
+.general-detail-overlay.open{display:flex}
+.general-detail-card{
+  position:relative;width:min(440px,100%);max-height:82vh;overflow:auto;
+  border:1px solid #b99a55;border-radius:16px;
+  background:linear-gradient(180deg,#172a3e,#0b1826);
+  box-shadow:0 14px 45px #000,inset 0 0 0 1px rgba(255,255,255,.05);
+  padding:15px;
+}
+.general-detail-card .detail{margin:0;border-color:#536b80;background:#102235}
+.general-detail-overlay-title{
+  margin:0 44px 10px 0;color:#f3dda1;font-size:14px;font-weight:900;
+}
+.general-detail-overlay-close{
+  position:absolute;right:10px;top:9px;z-index:2;
+  width:34px;height:34px;border:1px solid #64798d;border-radius:50%;
+  background:#263b50;color:#fff;font-size:20px;font-weight:900;
+}
+</style>
+
+<style id="clear-button-touch-fix">
+.slot .clear,.flag-slot .clear{
+  z-index:12;
+  cursor:pointer;
+  touch-action:manipulation;
+  pointer-events:auto;
+}
+</style>
+
+
+<style id="clear-button-touch-fix-v2">
+.slot .clear{
+  z-index:30!important;
+  right:-9px!important;
+  top:-10px!important;
+  width:28px!important;
+  height:28px!important;
+  line-height:28px!important;
+  padding:0!important;
+  pointer-events:auto!important;
+  touch-action:manipulation;
+}
+.flag-slot .clear{
+  z-index:30!important;
+  pointer-events:auto!important;
+  touch-action:manipulation;
+}
+</style>
+
+
+<style id="normal-slot-clear-structural-fix">
+.slot{user-select:none;-webkit-user-select:none}
+.slot .clear{
+  appearance:none;
+  -webkit-appearance:none;
+  display:none;
+  align-items:center;
+  justify-content:center;
+  box-sizing:border-box;
+  border:0;
+  position:absolute;
+  right:-9px;
+  top:-10px;
+  width:30px;
+  height:30px;
+  padding:0;
+  border-radius:50%;
+  background:#e25135;
+  color:#fff;
+  font-size:18px;
+  line-height:1;
+  font-weight:900;
+  z-index:50;
+  cursor:pointer;
+  touch-action:manipulation;
+  pointer-events:auto;
+}
+.slot.filled .clear{display:flex}
+</style>
+
+
+<style id="normal-clear-final-fix">
+.slot > .clear{display:none!important}
+.external-slot-clear{
+  position:absolute;
+  z-index:1000;
+  display:none;
+  align-items:center;
+  justify-content:center;
+  width:34px;
+  height:34px;
+  padding:0;
+  border:0;
+  border-radius:50%;
+  background:#e25135;
+  color:#fff;
+  font-size:18px;
+  line-height:1;
+  font-weight:900;
+  box-shadow:0 2px 6px #0008;
+  cursor:pointer;
+  touch-action:manipulation;
+  pointer-events:auto;
+  transform:translate(-50%,-50%);
+}
+.external-slot-clear.show{display:flex}
+</style>
+
 </head>
 <body>
 <div class="app">
@@ -245,7 +436,7 @@ body{background:radial-gradient(circle at 50% -8%,#34546b 0,#10283a 28%,#091723 
       <path class="line" d="M72 54 L72 63 L88 63 L88 78"/>
       <circle class="node" cx="50" cy="25" r="0.75"/><circle class="joint" cx="28" cy="63" r="0.65"/><circle class="joint" cx="72" cy="63" r="0.65"/>
     </svg>
-    <button class="slot main empty" data-role="大将"><span class="role">大将</span><div class="name">武将を選択</div><div class="apt"></div><span class="clear">×</span></button>
+    <div class="slot main empty" data-role="大将"><span class="role">大将</span><div class="name">武将を選択</div><div class="apt"></div><button type="button" class="clear" aria-label="武将を削除" onpointerdown="event.preventDefault();event.stopPropagation();" onclick="event.preventDefault();event.stopPropagation();clearRole(this.parentElement.dataset.role);return false;">×</button></div>
     <div class="flag-group" aria-label="旗持">
       <div class="flag-title">旗持</div>
       <div class="flag-row">
@@ -255,12 +446,20 @@ body{background:radial-gradient(circle at 50% -8%,#34546b 0,#10283a 28%,#091723 
       </div>
       <div id="flagEffect" class="flag-effect">旗持効果：未成立</div>
     </div>
-    <button class="slot sub1 empty" data-role="副将1"><span class="role">副将1</span><div class="name">武将を選択</div><div class="apt"></div><span class="clear">×</span></button>
-    <button class="slot sub2 empty" data-role="副将2"><span class="role">副将2</span><div class="name">武将を選択</div><div class="apt"></div><span class="clear">×</span></button>
-    <button class="slot assist1 empty" data-role="与力1"><span class="role">与力1</span><div class="name">武将を選択</div><div class="apt"></div><span class="clear">×</span></button>
-    <button class="slot assist2 empty" data-role="与力2"><span class="role">与力2</span><div class="name">武将を選択</div><div class="apt"></div><span class="clear">×</span></button>
-    <button class="slot assist3 empty" data-role="与力3"><span class="role">与力3</span><div class="name">武将を選択</div><div class="apt"></div><span class="clear">×</span></button>
-    <button class="slot assist4 empty" data-role="与力4"><span class="role">与力4</span><div class="name">武将を選択</div><div class="apt"></div><span class="clear">×</span></button>
+    <div class="slot sub1 empty" data-role="副将1"><span class="role">副将1</span><div class="name">武将を選択</div><div class="apt"></div><button type="button" class="clear" aria-label="武将を削除" onpointerdown="event.preventDefault();event.stopPropagation();" onclick="event.preventDefault();event.stopPropagation();clearRole(this.parentElement.dataset.role);return false;">×</button></div>
+    <div class="slot sub2 empty" data-role="副将2"><span class="role">副将2</span><div class="name">武将を選択</div><div class="apt"></div><button type="button" class="clear" aria-label="武将を削除" onpointerdown="event.preventDefault();event.stopPropagation();" onclick="event.preventDefault();event.stopPropagation();clearRole(this.parentElement.dataset.role);return false;">×</button></div>
+    <div class="slot assist1 empty" data-role="与力1"><span class="role">与力1</span><div class="name">武将を選択</div><div class="apt"></div><button type="button" class="clear" aria-label="武将を削除" onpointerdown="event.preventDefault();event.stopPropagation();" onclick="event.preventDefault();event.stopPropagation();clearRole(this.parentElement.dataset.role);return false;">×</button></div>
+    <div class="slot assist2 empty" data-role="与力2"><span class="role">与力2</span><div class="name">武将を選択</div><div class="apt"></div><button type="button" class="clear" aria-label="武将を削除" onpointerdown="event.preventDefault();event.stopPropagation();" onclick="event.preventDefault();event.stopPropagation();clearRole(this.parentElement.dataset.role);return false;">×</button></div>
+    <div class="slot assist3 empty" data-role="与力3"><span class="role">与力3</span><div class="name">武将を選択</div><div class="apt"></div><button type="button" class="clear" aria-label="武将を削除" onpointerdown="event.preventDefault();event.stopPropagation();" onclick="event.preventDefault();event.stopPropagation();clearRole(this.parentElement.dataset.role);return false;">×</button></div>
+    <div class="slot assist4 empty" data-role="与力4"><span class="role">与力4</span><div class="name">武将を選択</div><div class="apt"></div><button type="button" class="clear" aria-label="武将を削除" onpointerdown="event.preventDefault();event.stopPropagation();" onclick="event.preventDefault();event.stopPropagation();clearRole(this.parentElement.dataset.role);return false;">×</button></div>
+    <button type="button" class="external-slot-clear" data-clear-role="大将" aria-label="大将を削除">×</button>
+    <button type="button" class="external-slot-clear" data-clear-role="副将1" aria-label="副将1を削除">×</button>
+    <button type="button" class="external-slot-clear" data-clear-role="副将2" aria-label="副将2を削除">×</button>
+    <button type="button" class="external-slot-clear" data-clear-role="与力1" aria-label="与力1を削除">×</button>
+    <button type="button" class="external-slot-clear" data-clear-role="与力2" aria-label="与力2を削除">×</button>
+    <button type="button" class="external-slot-clear" data-clear-role="与力3" aria-label="与力3を削除">×</button>
+    <button type="button" class="external-slot-clear" data-clear-role="与力4" aria-label="与力4を削除">×</button>
+
   </div>
 
   <div class="summary">
@@ -279,6 +478,15 @@ body{background:radial-gradient(circle at 50% -8%,#34546b 0,#10283a 28%,#091723 
   <div id="chainsPanel" class="section tab-panel"><h2>上下接続の連鎖率</h2><div id="tsuienEditor" class="feature-editor"></div><div id="chains" class="chain-list"><span class="placeholder">上下でつながる武将を選択すると連鎖率を計算します</span></div></div>
   <div id="abilityPanel" class="section tab-panel"><h2>能力補正</h2><div id="abilityAdjustments"><span class="placeholder">能力補正の集計表示は今後この欄に反映します</span></div></div>
   <div id="detailsPanel" class="section tab-panel"><h2>武将別データ</h2><div id="details" class="detail-list"><span class="placeholder">各枠をタップして武将を選択してください</span></div></div>
+</div>
+
+
+<div id="generalDetailOverlay" class="general-detail-overlay" aria-hidden="true">
+  <div class="general-detail-card" role="dialog" aria-modal="true" aria-labelledby="generalDetailOverlayTitle">
+    <button id="closeGeneralDetailOverlay" type="button" class="general-detail-overlay-close" aria-label="閉じる">×</button>
+    <div id="generalDetailOverlayTitle" class="general-detail-overlay-title">武将データ</div>
+    <div id="generalDetailOverlayBody"></div>
+  </div>
 </div>
 
 <div id="modal" class="modal"><div class="sheet">
@@ -508,19 +716,103 @@ function renderCandidates(){
   chooseGeneral(x,c?c.checked:false);
 }));
 }
-function clearRole(role){selected[role]=null;renderAll()}
+function clearRole(role){if(!role)return;selected[role]=null;formationStates[activeFormation].selected=selected;activeRole=null;closePicker();renderAll();}
 function sharedTieCount(a,b){
   if(!a||!b)return 0;
   const bs=new Set(getTies(b));
   return getTies(a).filter(t=>bs.has(t)).length;
 }
+
+
+
+function generalDetailHtml(role){
+  const x=selected[role];
+  if(!x)return '';
+  const skills=getSkills(x).join(' / ')||'未登録';
+  const ties=getTies(x).join(' / ')||'未登録';
+  return `<div class="detail"><div class="detail-head"><div><div class="detail-role">${role}</div><div class="detail-name">${x['武将名']}</div></div><div class="grade">${branch} ${clean(x[branch])}</div></div><div class="row"><span class="label">天賦:</span> ${clean(x['天賦'])}　<span class="label">戦法:</span> ${clean(x['戦法名'])}</div><div class="row"><span class="label">戦法効果:</span> ${clean(x['戦法効果'])}</div><div class="row"><span class="label">発動間隔:</span> ${clean(x['発動間隔'])}　<span class="label">基礎連鎖:</span> ${clean(x['基礎連鎖'])}　<span class="label">連鎖順:</span> ${clean(x['連鎖順'])}</div><div class="row"><span class="label">技能:</span> ${skills}</div><div class="row"><span class="label">縁:</span> ${ties}</div></div>`;
+}
+function openGeneralDetailOverlay(role){
+  const x=selected[role];
+  if(!x)return;
+  $('#generalDetailOverlayTitle').textContent=`${role}　${x['武将名']}`;
+  $('#generalDetailOverlayBody').innerHTML=generalDetailHtml(role);
+  const overlay=$('#generalDetailOverlay');
+  overlay.classList.add('open');
+  overlay.setAttribute('aria-hidden','false');
+}
+function closeGeneralDetailOverlay(){
+  const overlay=$('#generalDetailOverlay');
+  overlay.classList.remove('open');
+  overlay.setAttribute('aria-hidden','true');
+}
+const CHAIN_ORDER_GROUPS={
+  left:['大将','副将1','与力1','与力2'],
+  right:['大将','副将2','与力3','与力4']
+};
+const CHAIN_ORDER_RANK={'早い':0,'普通':1,'遅い':2};
+function chainOrderNumbers(group){
+  const roleOrder=CHAIN_ORDER_GROUPS[group]||[];
+  const list=roleOrder
+    .map((role,index)=>({role,index,general:selected[role]}))
+    .filter(v=>v.general)
+    .sort((a,b)=>{
+      const ar=Object.prototype.hasOwnProperty.call(CHAIN_ORDER_RANK,a.general['連鎖順'])?CHAIN_ORDER_RANK[a.general['連鎖順']]:1;
+      const br=Object.prototype.hasOwnProperty.call(CHAIN_ORDER_RANK,b.general['連鎖順'])?CHAIN_ORDER_RANK[b.general['連鎖順']]:1;
+      return ar-br||a.index-b.index;
+    });
+  return new Map(list.map((v,i)=>[v.role,i+1]));
+}
+
+function updateExternalClearButtons(){
+  const formation=document.querySelector('.formation');
+  if(!formation)return;
+  const fRect=formation.getBoundingClientRect();
+  $$('.external-slot-clear').forEach(btn=>{
+    const role=btn.dataset.clearRole;
+    const slot=document.querySelector(`.slot[data-role="${role}"]`);
+    const has=!!selected[role];
+    btn.classList.toggle('show',has);
+    if(!slot||!has)return;
+    const r=slot.getBoundingClientRect();
+    // Place the external button at the same visual upper-right position,
+    // but as a sibling of the slot so its tap can never trigger slot selection.
+    btn.style.left=`${r.right-fRect.left+5}px`;
+    btn.style.top=`${r.top-fRect.top-5}px`;
+  });
+}
 function renderSlots(){
   const commander=selected['大将'];
+  const leftOrder=chainOrderNumbers('left');
+  const rightOrder=chainOrderNumbers('right');
   $$('.slot').forEach(el=>{
     const role=el.dataset.role,x=selected[role];
+    el.setAttribute('role','button');
+    el.setAttribute('tabindex','0');
+    el.setAttribute('aria-label',x?`${role} ${x['武将名']}`:`${role} 武将を選択`);
     el.classList.toggle('empty',!x);
     el.classList.toggle('filled',!!x);
     el.querySelector('.name').textContent=x?x['武将名']:'武将を選択';
+    let tactic=el.querySelector('.tactic-bar');
+    if(!tactic){
+      tactic=document.createElement('div');
+      tactic.className='tactic-bar';
+      tactic.setAttribute('role','button');
+      tactic.setAttribute('tabindex','0');
+      tactic.setAttribute('aria-label','戦法名から武将データを表示');
+      tactic.innerHTML='<span class="chain-order-num left"></span><span class="tactic-name"></span><span class="chain-order-num right"></span>';
+      el.appendChild(tactic);
+    }
+    tactic.dataset.role=role;
+    const tacticName=tactic.querySelector('.tactic-name');
+    const leftNum=tactic.querySelector('.chain-order-num.left');
+    const rightNum=tactic.querySelector('.chain-order-num.right');
+    const tacticText=x?(x['戦法名']||'戦法名なし'):'';
+    tacticName.textContent=tacticText;
+    tactic.classList.toggle('tactic-long',tacticText.length>=9);
+    tactic.classList.toggle('tactic-very-long',tacticText.length>=13);
+    leftNum.textContent=x&&leftOrder.has(role)?String(leftOrder.get(role)):'';
+    rightNum.textContent=x&&rightOrder.has(role)?String(rightOrder.get(role)):'';
     const apt=el.querySelector('.apt');
     if(!x){apt.textContent='';return;}
     let extra='';
@@ -529,6 +821,14 @@ function renderSlots(){
       extra=` ・ 縁${ties}${ties>=2?' ★':''}`;
       apt.innerHTML=`${escapeHtml(branch)} ${escapeHtml(clean(x[branch]))}<span class="${ties>=2?'tie-ok':'tie-ng'}">${escapeHtml(extra)}</span>`;
     }else apt.textContent=`${branch} ${clean(x[branch])}`;
+  });
+  $$('.slot .tactic-bar').forEach(tactic=>{
+    tactic.onclick=e=>{e.preventDefault();e.stopPropagation();openGeneralDetailOverlay(tactic.dataset.role);};
+    tactic.onkeydown=e=>{
+      if(e.key==='Enter'||e.key===' '){
+        e.preventDefault();e.stopPropagation();openGeneralDetailOverlay(tactic.dataset.role);
+      }
+    };
   });
   $$('.flag-slot').forEach(el=>{
     const role=el.dataset.role,x=selected[role];
@@ -550,6 +850,7 @@ function renderSlots(){
     const line=document.querySelector(`.formation-lines .line[data-edge="大将|${role}"]`);
     if(line)line.classList.toggle('tie-qualified',sharedTieCount(commander,selected[role])>=2);
   });
+  updateExternalClearButtons();
 }
 function regularSkillCounts(){
   const m=new Map();
@@ -1026,7 +1327,7 @@ function renderTsuienEditor(){
   const toggle=el.querySelector('#tsuienToggle');if(toggle)toggle.addEventListener('click',()=>{el.dataset.open=isOpen?'0':'1';renderTsuienEditor();});
   el.querySelectorAll('.tsuien-select').forEach(sel=>sel.addEventListener('change',()=>{const role=sel.dataset.role;if(selected[role]&&selected[role]['レアリティ']==='UR')selected[role].__tsuienTie=sel.value||'';formationStates[activeFormation].selected=selected;renderAll();}));
 }
-function renderDetails(){const blocks=roles.filter(r=>selected[r]).map(r=>{const x=selected[r];const skills=getSkills(x).join(' / ')||'未登録';const ties=getTies(x).join(' / ')||'未登録';return `<div class="detail"><div class="detail-head"><div><div class="detail-role">${r}</div><div class="detail-name">${x['武将名']}</div></div><div class="grade">${branch} ${clean(x[branch])}</div></div><div class="row"><span class="label">天賦:</span> ${clean(x['天賦'])}　<span class="label">戦法:</span> ${clean(x['戦法名'])}</div><div class="row"><span class="label">戦法効果:</span> ${clean(x['戦法効果'])}</div><div class="row"><span class="label">発動間隔:</span> ${clean(x['発動間隔'])}　<span class="label">基礎連鎖:</span> ${clean(x['基礎連鎖'])}　<span class="label">連鎖順:</span> ${clean(x['連鎖順'])}</div><div class="row"><span class="label">技能:</span> ${skills}</div><div class="row"><span class="label">縁:</span> ${ties}</div></div>`}).join('');$('#details').innerHTML=blocks||'<span class="placeholder">各枠をタップして武将を選択してください</span>'}
+function renderDetails(){const blocks=roles.filter(r=>selected[r]).map(r=>{const x=selected[r];const skills=getSkills(x).join(' / ')||'未登録';const ties=getTies(x).join(' / ')||'未登録';return `<div class="detail" id="detail-${r}" data-detail-role="${r}"><div class="detail-head"><div><div class="detail-role">${r}</div><div class="detail-name">${x['武将名']}</div></div><div class="grade">${branch} ${clean(x[branch])}</div></div><div class="row"><span class="label">天賦:</span> ${clean(x['天賦'])}　<span class="label">戦法:</span> ${clean(x['戦法名'])}</div><div class="row"><span class="label">戦法効果:</span> ${clean(x['戦法効果'])}</div><div class="row"><span class="label">発動間隔:</span> ${clean(x['発動間隔'])}　<span class="label">基礎連鎖:</span> ${clean(x['基礎連鎖'])}　<span class="label">連鎖順:</span> ${clean(x['連鎖順'])}</div><div class="row"><span class="label">技能:</span> ${skills}</div><div class="row"><span class="label">縁:</span> ${ties}</div></div>`}).join('');$('#details').innerHTML=blocks||'<span class="placeholder">各枠をタップして武将を選択してください</span>'}
 function renderFormationTabs(){
   $('#formationTabs').innerHTML=formationStates.map((state,i)=>{
     const count=roles.map(r=>state.selected[r]).filter(Boolean).length;
@@ -1172,12 +1473,51 @@ function renderBranchMenu(){
  $$('.branch-choice').forEach(b=>b.onclick=()=>{branch=b.dataset.b;if(!['足軽','騎馬','弓'].includes(branch))armor=false;else{const c=document.querySelector(`[data-armor-for="${branch}"]`);armor=!!(c&&c.checked)}formationStates[activeFormation].branch=branch;formationStates[activeFormation].armor=armor;updateBranchDisplay();$('#branchMenu').classList.remove('open');renderAll()});
  $$('.armor-check input').forEach(c=>c.onchange=()=>{if(c.dataset.armorFor===branch){armor=c.checked;formationStates[activeFormation].armor=armor;updateBranchDisplay();renderAll()}});
 }
-$$('.slot').forEach(el=>{el.addEventListener('click',e=>{if(e.target.classList.contains('clear')){e.stopPropagation();clearRole(el.dataset.role)}else openPicker(el.dataset.role)});el.querySelector('.clear').addEventListener('click',e=>{e.preventDefault();e.stopPropagation();clearRole(el.dataset.role)})});
-$$('.flag-slot').forEach(el=>{el.addEventListener('click',e=>{if(e.target.classList.contains('clear')){e.stopPropagation();clearRole(el.dataset.role)}else openPicker(el.dataset.role)});el.querySelector('.clear').addEventListener('click',e=>{e.preventDefault();e.stopPropagation();clearRole(el.dataset.role)})});
+
+
+// 通常武将枠：×ボタンはHTML側のonclickで直接削除。
+$$('.slot').forEach(el=>{
+  el.addEventListener('click',e=>{
+    if(e.target.closest('.clear')||e.target.closest('.tactic-bar'))return;
+    openPicker(el.dataset.role);
+  });
+  el.addEventListener('keydown',e=>{
+    if((e.key==='Enter'||e.key===' ')&&!e.target.closest('.clear')){
+      e.preventDefault();
+      openPicker(el.dataset.role);
+    }
+  });
+});
+
+
+// 通常枠の×は武将枠とは別要素。親子関係がないため選択画面は絶対に開かない。
+$$('.external-slot-clear').forEach(btn=>{
+  btn.addEventListener('pointerdown',e=>{e.preventDefault();e.stopPropagation();});
+  btn.addEventListener('click',e=>{
+    e.preventDefault();
+    e.stopPropagation();
+    clearRole(btn.dataset.clearRole);
+  });
+});
+window.addEventListener('resize',updateExternalClearButtons);
+
+// 旗持は従来どおり動作しているため、その構造を維持。
+$$('.flag-slot').forEach(el=>{
+  const clear=el.querySelector('.clear');
+  clear.addEventListener('click',e=>{
+    e.preventDefault();
+    e.stopPropagation();
+    clearRole(el.dataset.role);
+  });
+  el.addEventListener('click',e=>{
+    if(e.target.closest('.clear'))return;
+    openPicker(el.dataset.role);
+  });
+});
 $('#excludeDomestic').addEventListener('change',e=>{excludeDomesticSkills=e.target.checked;if(excludeDomesticSkills){showDomesticOnly=false;$('#showDomesticOnly').checked=false}renderSummary()});
 $('#showDomesticOnly').addEventListener('change',e=>{showDomesticOnly=e.target.checked;if(showDomesticOnly){excludeDomesticSkills=false;$('#excludeDomestic').checked=false}renderSummary()});
 $('#excludeFlagDomestic').addEventListener('change',e=>{excludeFlagDomesticSkills=e.target.checked;renderCandidates()});
-$('#closeModal').onclick=closePicker;$('#modal').addEventListener('click',e=>{if(e.target===$('#modal'))closePicker()});$('#search').addEventListener('input',renderCandidates);
+$('#closeModal').onclick=closePicker;$('#closeGeneralDetailOverlay').onclick=closeGeneralDetailOverlay;$('#generalDetailOverlay').addEventListener('click',e=>{if(e.target===$('#generalDetailOverlay'))closeGeneralDetailOverlay();});$('#modal').addEventListener('click',e=>{if(e.target===$('#modal'))closePicker()});$('#search').addEventListener('input',renderCandidates);
 $('#favoriteGeneralFilter').addEventListener('click',e=>{const b=e.target.closest('button[data-favorite-general]');if(!b)return;favoriteGeneralOnly=b.dataset.favoriteGeneral==='fav';$$('#favoriteGeneralFilter button').forEach(x=>x.classList.toggle('active',x===b));renderCandidates();});
 $('#showFavoriteSkillsOnly').addEventListener('change',e=>{showFavoriteSkillsOnly=e.target.checked;renderSummary();});
 $$('.filterbar:not(.tiefilterbar):not(.commander-skill-filter):not(.deputy-skill-filter):not(.assist-skill-filter) button').forEach(b=>b.onclick=()=>{filter=b.dataset.filter;$$('.filterbar:not(.tiefilterbar):not(.commander-skill-filter):not(.deputy-skill-filter):not(.assist-skill-filter) button').forEach(x=>x.classList.toggle('active',x===b));renderCandidates()});$$('.commander-skill-filter button').forEach(b=>b.onclick=()=>{commanderSkill=b.dataset.commanderSkill||'';$$('.commander-skill-filter button').forEach(x=>x.classList.toggle('active',x===b));renderCandidates()});$$('.deputy-skill-filter button').forEach(b=>b.onclick=()=>{deputySkill=b.dataset.deputySkill||'';$$('.deputy-skill-filter button').forEach(x=>x.classList.toggle('active',x===b));renderCandidates()});$$('.assist-skill-filter button').forEach(b=>b.onclick=()=>{assistSkill=b.dataset.assistSkill||'';$$('.assist-skill-filter button').forEach(x=>x.classList.toggle('active',x===b));renderCandidates()});$$('.tiefilterbar button').forEach(b=>b.onclick=()=>{minTieMatches=+b.dataset.minTies;$$('.tiefilterbar button').forEach(x=>x.classList.toggle('active',x===b));renderCandidates()});$$('.sortbar button').forEach(b=>b.onclick=()=>{sortMode=b.dataset.sort;$$('.sortbar button').forEach(x=>x.classList.toggle('active',x===b));renderCandidates()});$('#resetCurrent').onclick=resetCurrentFormation;$('#resetAll').onclick=resetAllFormations;$('#saveFormation').onclick=saveFormationData;$('#loadFormation').onclick=loadFormationData;$('#exportFormation').onclick=exportFormationData;$('#importFormation').onclick=()=>$('#importFormationFile').click();$('#importFormationFile').addEventListener('change',e=>importFormationData(e.target.files&&e.target.files[0]));$('#branchBtn').onclick=()=>{renderBranchMenu();$('#branchMenu').classList.add('open')};$('#branchMenu').addEventListener('click',e=>{if(e.target===$('#branchMenu'))$('#branchMenu').classList.remove('open')});
