@@ -287,7 +287,7 @@ body{background:radial-gradient(circle at 50% -8%,#34546b 0,#10283a 28%,#091723 
 
 <style id="general-detail-overlay-style">
 .general-detail-overlay{
-  position:fixed;inset:0;z-index:80;display:none;
+  position:fixed;inset:0;z-index:3000;display:none;
   align-items:center;justify-content:center;
   padding:18px;background:rgba(0,0,0,.78);
   backdrop-filter:blur(3px);
@@ -397,6 +397,36 @@ body{background:radial-gradient(circle at 50% -8%,#34546b 0,#10283a 28%,#091723 
   transform:translate(-50%,-50%);
 }
 .external-slot-clear.show{display:flex}
+</style>
+
+
+<style id="overlay-delete-lock">
+body.general-detail-open .external-slot-clear,
+body.general-detail-open .slot > .clear,
+body.general-detail-open .flag-slot .clear{
+  visibility:hidden!important;
+  pointer-events:none!important;
+}
+</style>
+
+
+<style id="branch-menu-delete-lock">
+body.branch-menu-open .external-slot-clear,
+body.branch-menu-open .slot > .clear,
+body.branch-menu-open .flag-slot .clear{
+  visibility:hidden!important;
+  pointer-events:none!important;
+}
+</style>
+
+
+<style id="global-overlay-delete-lock">
+body.ui-overlay-open .external-slot-clear,
+body.ui-overlay-open .slot > .clear,
+body.ui-overlay-open .flag-slot .clear{
+  visibility:hidden!important;
+  pointer-events:none!important;
+}
 </style>
 
 </head>
@@ -582,8 +612,17 @@ function findGeneralUsage(name){
   }
   return null;
 }
-function openPicker(role){activeRole=role; $('#modalTitle').textContent=role+'の武将を選択'; $('#search').value=''; filter='all'; favoriteGeneralOnly=false; sortMode='default'; minTieMatches=0; commanderSkill=''; deputySkill=''; assistSkill=''; $$('.filterbar:not(.tiefilterbar):not(.commander-skill-filter):not(.deputy-skill-filter):not(.assist-skill-filter) button').forEach((b,i)=>b.classList.toggle('active',i===0)); $$('#favoriteGeneralFilter button').forEach(b=>b.classList.toggle('active',b.dataset.favoriteGeneral==='all')); $$('.tiefilterbar button').forEach(b=>b.classList.toggle('active',b.dataset.minTies==='0')); $$('.commander-skill-filter button').forEach(b=>b.classList.toggle('active',b.dataset.commanderSkill==='')); $$('.deputy-skill-filter button').forEach(b=>b.classList.toggle('active',b.dataset.deputySkill==='')); $$('.assist-skill-filter button').forEach(b=>b.classList.toggle('active',b.dataset.assistSkill==='')); $('#commanderSkillFilter').style.display=role==='大将'?'flex':'none'; $('#deputySkillFilter').style.display=(role==='副将1'||role==='副将2')?'flex':'none'; $('#assistSkillFilter').style.display=role.startsWith('与力')?'flex':'none'; const isFlag=flagRoles.includes(role); $('#aptitudeFilter').style.display=isFlag?'none':'flex'; $('#tieFilter').style.display=isFlag?'none':'flex'; $('#chainSort').style.display=isFlag?'none':'inline-block'; $('#tieSort').style.display=isFlag?'none':'inline-block'; $('#flagCommonSort').style.display=isFlag?'inline-block':'none'; $('#flagDomesticToggle').style.display=isFlag?'block':'none'; $('#excludeFlagDomestic').checked=excludeFlagDomesticSkills; $$('.sortbar button').forEach(b=>b.classList.toggle('active',b.dataset.sort==='default')); renderCandidates(); $('#modal').classList.add('open')}
-function closePicker(){ $('#modal').classList.remove('open') }
+
+function syncOverlayDeleteLock(){
+  const anyOpen=
+    $('#modal')?.classList.contains('open') ||
+    $('#branchMenu')?.classList.contains('open') ||
+    $('#generalDetailOverlay')?.classList.contains('open');
+  document.body.classList.toggle('ui-overlay-open',!!anyOpen);
+  if(!anyOpen)updateExternalClearButtons();
+}
+function openPicker(role){activeRole=role; $('#modalTitle').textContent=role+'の武将を選択'; $('#search').value=''; filter='all'; favoriteGeneralOnly=false; sortMode='default'; minTieMatches=0; commanderSkill=''; deputySkill=''; assistSkill=''; $$('.filterbar:not(.tiefilterbar):not(.commander-skill-filter):not(.deputy-skill-filter):not(.assist-skill-filter) button').forEach((b,i)=>b.classList.toggle('active',i===0)); $$('#favoriteGeneralFilter button').forEach(b=>b.classList.toggle('active',b.dataset.favoriteGeneral==='all')); $$('.tiefilterbar button').forEach(b=>b.classList.toggle('active',b.dataset.minTies==='0')); $$('.commander-skill-filter button').forEach(b=>b.classList.toggle('active',b.dataset.commanderSkill==='')); $$('.deputy-skill-filter button').forEach(b=>b.classList.toggle('active',b.dataset.deputySkill==='')); $$('.assist-skill-filter button').forEach(b=>b.classList.toggle('active',b.dataset.assistSkill==='')); $('#commanderSkillFilter').style.display=role==='大将'?'flex':'none'; $('#deputySkillFilter').style.display=(role==='副将1'||role==='副将2')?'flex':'none'; $('#assistSkillFilter').style.display=role.startsWith('与力')?'flex':'none'; const isFlag=flagRoles.includes(role); $('#aptitudeFilter').style.display=isFlag?'none':'flex'; $('#tieFilter').style.display=isFlag?'none':'flex'; $('#chainSort').style.display=isFlag?'none':'inline-block'; $('#tieSort').style.display=isFlag?'none':'inline-block'; $('#flagCommonSort').style.display=isFlag?'inline-block':'none'; $('#flagDomesticToggle').style.display=isFlag?'block':'none'; $('#excludeFlagDomestic').checked=excludeFlagDomesticSkills; $$('.sortbar button').forEach(b=>b.classList.toggle('active',b.dataset.sort==='default')); renderCandidates(); $('#modal').classList.add('open');syncOverlayDeleteLock()}
+function closePicker(){ $('#modal').classList.remove('open');syncOverlayDeleteLock() }
 function candidateMatch(x,q){const hay=[x['武将名'],x['技能1'],x['技能2'],x['技能3'],x['技能4'],x['縁1'],x['縁2'],x['縁3'],x['縁4'],x['縁5']].filter(Boolean).join(' ').toLowerCase();return hay.includes(q.toLowerCase())}
 function chooseGeneral(x,star4=false){
   const usage=findGeneralUsage(x['武将名']);
@@ -738,13 +777,17 @@ function openGeneralDetailOverlay(role){
   $('#generalDetailOverlayTitle').textContent=`${role}　${x['武将名']}`;
   $('#generalDetailOverlayBody').innerHTML=generalDetailHtml(role);
   const overlay=$('#generalDetailOverlay');
+  document.body.classList.add('general-detail-open');
   overlay.classList.add('open');
   overlay.setAttribute('aria-hidden','false');
+  syncOverlayDeleteLock();
 }
 function closeGeneralDetailOverlay(){
   const overlay=$('#generalDetailOverlay');
   overlay.classList.remove('open');
   overlay.setAttribute('aria-hidden','true');
+  document.body.classList.remove('general-detail-open');
+  syncOverlayDeleteLock();
 }
 const CHAIN_ORDER_GROUPS={
   left:['大将','副将1','与力1','与力2'],
@@ -1467,10 +1510,22 @@ function showExistingSaveStatus(){
   try{const raw=localStorage.getItem(SAVE_KEY);if(!raw)return;const data=JSON.parse(raw);if(data.savedAt){const d=new Date(data.savedAt);if(!isNaN(d))setSaveStatus(`保存あり：${d.toLocaleString('ja-JP')}`);}}catch(e){}
 }
 function renderAll(){formationStates[activeFormation].branch=branch;formationStates[activeFormation].armor=armor;formationStates[activeFormation].selected=selected;updateBranchDisplay();renderFormationTabs();renderSlots();renderKaidenEditor();renderSummary();renderTsuienEditor();renderChains();renderDetails()}
+
+function openBranchMenuLocked(){
+  renderBranchMenu();
+  document.body.classList.add('branch-menu-open');
+  $('#branchMenu').classList.add('open');
+  syncOverlayDeleteLock();
+}
+function closeBranchMenuLocked(){
+  $('#branchMenu').classList.remove('open');
+  document.body.classList.remove('branch-menu-open');
+  syncOverlayDeleteLock();
+}
 function renderBranchMenu(){
  const grid=$('#branchGrid');
  grid.innerHTML=Object.keys(branches).map(k=>{const can=['足軽','騎馬','弓'].includes(k);const equipped=k===branch&&armor;const shown=equippedBranchName(k,equipped);return `<div class="branch-option"><button class="branch-choice ${k===branch?'active':''}" data-b="${k}"><span class="branch-glyph">${branchIconSvg(shown)}</span><span>${shown}</span></button>${can?`<label class="armor-check"><span>兵装</span><input type="checkbox" data-armor-for="${k}" ${equipped?'checked':''}></label>`:''}</div>`}).join('');
- $$('.branch-choice').forEach(b=>b.onclick=()=>{branch=b.dataset.b;if(!['足軽','騎馬','弓'].includes(branch))armor=false;else{const c=document.querySelector(`[data-armor-for="${branch}"]`);armor=!!(c&&c.checked)}formationStates[activeFormation].branch=branch;formationStates[activeFormation].armor=armor;updateBranchDisplay();$('#branchMenu').classList.remove('open');renderAll()});
+ $$('.branch-choice').forEach(b=>b.onclick=()=>{branch=b.dataset.b;if(!['足軽','騎馬','弓'].includes(branch))armor=false;else{const c=document.querySelector(`[data-armor-for="${branch}"]`);armor=!!(c&&c.checked)}formationStates[activeFormation].branch=branch;formationStates[activeFormation].armor=armor;updateBranchDisplay();closeBranchMenuLocked();renderAll()});
  $$('.armor-check input').forEach(c=>c.onchange=()=>{if(c.dataset.armorFor===branch){armor=c.checked;formationStates[activeFormation].armor=armor;updateBranchDisplay();renderAll()}});
 }
 
@@ -1520,7 +1575,7 @@ $('#excludeFlagDomestic').addEventListener('change',e=>{excludeFlagDomesticSkill
 $('#closeModal').onclick=closePicker;$('#closeGeneralDetailOverlay').onclick=closeGeneralDetailOverlay;$('#generalDetailOverlay').addEventListener('click',e=>{if(e.target===$('#generalDetailOverlay'))closeGeneralDetailOverlay();});$('#modal').addEventListener('click',e=>{if(e.target===$('#modal'))closePicker()});$('#search').addEventListener('input',renderCandidates);
 $('#favoriteGeneralFilter').addEventListener('click',e=>{const b=e.target.closest('button[data-favorite-general]');if(!b)return;favoriteGeneralOnly=b.dataset.favoriteGeneral==='fav';$$('#favoriteGeneralFilter button').forEach(x=>x.classList.toggle('active',x===b));renderCandidates();});
 $('#showFavoriteSkillsOnly').addEventListener('change',e=>{showFavoriteSkillsOnly=e.target.checked;renderSummary();});
-$$('.filterbar:not(.tiefilterbar):not(.commander-skill-filter):not(.deputy-skill-filter):not(.assist-skill-filter) button').forEach(b=>b.onclick=()=>{filter=b.dataset.filter;$$('.filterbar:not(.tiefilterbar):not(.commander-skill-filter):not(.deputy-skill-filter):not(.assist-skill-filter) button').forEach(x=>x.classList.toggle('active',x===b));renderCandidates()});$$('.commander-skill-filter button').forEach(b=>b.onclick=()=>{commanderSkill=b.dataset.commanderSkill||'';$$('.commander-skill-filter button').forEach(x=>x.classList.toggle('active',x===b));renderCandidates()});$$('.deputy-skill-filter button').forEach(b=>b.onclick=()=>{deputySkill=b.dataset.deputySkill||'';$$('.deputy-skill-filter button').forEach(x=>x.classList.toggle('active',x===b));renderCandidates()});$$('.assist-skill-filter button').forEach(b=>b.onclick=()=>{assistSkill=b.dataset.assistSkill||'';$$('.assist-skill-filter button').forEach(x=>x.classList.toggle('active',x===b));renderCandidates()});$$('.tiefilterbar button').forEach(b=>b.onclick=()=>{minTieMatches=+b.dataset.minTies;$$('.tiefilterbar button').forEach(x=>x.classList.toggle('active',x===b));renderCandidates()});$$('.sortbar button').forEach(b=>b.onclick=()=>{sortMode=b.dataset.sort;$$('.sortbar button').forEach(x=>x.classList.toggle('active',x===b));renderCandidates()});$('#resetCurrent').onclick=resetCurrentFormation;$('#resetAll').onclick=resetAllFormations;$('#saveFormation').onclick=saveFormationData;$('#loadFormation').onclick=loadFormationData;$('#exportFormation').onclick=exportFormationData;$('#importFormation').onclick=()=>$('#importFormationFile').click();$('#importFormationFile').addEventListener('change',e=>importFormationData(e.target.files&&e.target.files[0]));$('#branchBtn').onclick=()=>{renderBranchMenu();$('#branchMenu').classList.add('open')};$('#branchMenu').addEventListener('click',e=>{if(e.target===$('#branchMenu'))$('#branchMenu').classList.remove('open')});
+$$('.filterbar:not(.tiefilterbar):not(.commander-skill-filter):not(.deputy-skill-filter):not(.assist-skill-filter) button').forEach(b=>b.onclick=()=>{filter=b.dataset.filter;$$('.filterbar:not(.tiefilterbar):not(.commander-skill-filter):not(.deputy-skill-filter):not(.assist-skill-filter) button').forEach(x=>x.classList.toggle('active',x===b));renderCandidates()});$$('.commander-skill-filter button').forEach(b=>b.onclick=()=>{commanderSkill=b.dataset.commanderSkill||'';$$('.commander-skill-filter button').forEach(x=>x.classList.toggle('active',x===b));renderCandidates()});$$('.deputy-skill-filter button').forEach(b=>b.onclick=()=>{deputySkill=b.dataset.deputySkill||'';$$('.deputy-skill-filter button').forEach(x=>x.classList.toggle('active',x===b));renderCandidates()});$$('.assist-skill-filter button').forEach(b=>b.onclick=()=>{assistSkill=b.dataset.assistSkill||'';$$('.assist-skill-filter button').forEach(x=>x.classList.toggle('active',x===b));renderCandidates()});$$('.tiefilterbar button').forEach(b=>b.onclick=()=>{minTieMatches=+b.dataset.minTies;$$('.tiefilterbar button').forEach(x=>x.classList.toggle('active',x===b));renderCandidates()});$$('.sortbar button').forEach(b=>b.onclick=()=>{sortMode=b.dataset.sort;$$('.sortbar button').forEach(x=>x.classList.toggle('active',x===b));renderCandidates()});$('#resetCurrent').onclick=resetCurrentFormation;$('#resetAll').onclick=resetAllFormations;$('#saveFormation').onclick=saveFormationData;$('#loadFormation').onclick=loadFormationData;$('#exportFormation').onclick=exportFormationData;$('#importFormation').onclick=()=>$('#importFormationFile').click();$('#importFormationFile').addEventListener('change',e=>importFormationData(e.target.files&&e.target.files[0]));$('#branchBtn').onclick=openBranchMenuLocked;$('#branchMenu').addEventListener('click',e=>{if(e.target===$('#branchMenu'))closeBranchMenuLocked()});
 $$('.section-tab').forEach(btn=>btn.addEventListener('click',()=>{
   $$('.section-tab').forEach(b=>b.classList.toggle('active',b===btn));
   $$('.tab-panel').forEach(p=>p.classList.toggle('active',p.id===btn.dataset.panel));
