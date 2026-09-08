@@ -429,6 +429,74 @@ body.ui-overlay-open .flag-slot .clear{
 }
 </style>
 
+
+<style id="battle-condition-style">
+.battle-condition-box{margin:0 0 12px;padding:11px;border:1px solid #36536d;border-radius:10px;background:#0a1a28}
+.battle-condition-title{font-weight:900;color:#e5c879;margin-bottom:8px}.battle-condition-title small{font-size:10px;color:#91a9bc;margin-left:6px}
+.battle-condition-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px}
+.battle-condition-grid label{display:flex;align-items:center;gap:7px;min-height:36px;padding:6px 8px;border:1px solid #29445d;border-radius:7px;background:#102438;color:#dbe7f1;font-size:12px;font-weight:700}
+.battle-condition-grid input{width:18px;height:18px;flex:0 0 18px;accent-color:#c69a45}
+.battle-condition-note{margin-top:8px;color:#8fa6bb;font-size:10px;line-height:1.5}
+@media(max-width:560px){.battle-condition-grid{grid-template-columns:1fr}.battle-condition-grid label{min-height:34px}}
+</style>
+
+
+<style id="candidate-swap-compare-style">
+.cand-compare{display:block;margin-top:7px;padding:7px 8px;border:1px solid #35526b;border-radius:7px;background:#081725;font-size:10px;line-height:1.45;color:#c8d6e2}
+.cand-compare-title{font-weight:900;color:#e3c779;margin-bottom:4px}
+.cand-compare-row{display:flex;flex-wrap:wrap;gap:5px 10px}
+.cand-compare-item{white-space:nowrap}
+.cand-compare .up{color:#8fd3a9;font-weight:900}
+.cand-compare .down{color:#e39b91;font-weight:900}
+.cand-compare .same{color:#9eb1c1}
+.cand-compare-skills{margin-top:4px}
+.cand-compare-skills .gain{color:#8fd3a9}
+.cand-compare-skills .loss{color:#e39b91}
+@media(max-width:560px){.cand-compare{font-size:10px;padding:6px 7px}.cand-compare-row{gap:4px 8px}}
+</style>
+
+
+<style id="tactic-effect-summary-style">
+.tactic-summary-section{margin-top:14px;padding-top:12px;border-top:1px solid #2e465a}
+.tactic-summary-section h3{margin:0 0 8px;color:#e2c579;font-size:14px}
+.tactic-effect-list{display:grid;gap:7px}
+.tactic-effect-row{padding:8px 9px;border:1px solid #314c63;border-radius:8px;background:#0a1926}
+.tactic-effect-head{display:flex;align-items:center;gap:7px;flex-wrap:wrap;margin-bottom:4px}
+.tactic-effect-order{display:inline-flex;align-items:center;justify-content:center;min-width:24px;height:24px;border-radius:12px;background:#243e53;color:#fff;font-weight:900;font-size:11px}
+.tactic-effect-role{color:#91acc0;font-size:10px;font-weight:800}
+.tactic-effect-name{color:#f0d78a;font-weight:900;font-size:12px}
+.tactic-effect-general{color:#dbe6ee;font-size:11px}
+.tactic-effect-body{color:#c4d2dc;font-size:11px;line-height:1.55}
+.tactic-effect-category{display:inline-block;margin:3px 4px 0 0;padding:2px 6px;border-radius:10px;border:1px solid #3a5870;color:#a9c1d3;font-size:9px;font-weight:800}
+</style>
+
+
+<style id="formation-image-export-style">
+#imageExportOverlay{position:fixed;inset:0;z-index:3600;background:rgba(0,0,0,.78);display:none;align-items:center;justify-content:center;padding:14px}
+#imageExportOverlay.open{display:flex}
+.image-export-card{width:min(94vw,520px);max-height:90vh;overflow:auto;background:#0b1722;border:1px solid #526b7e;border-radius:12px;padding:12px;box-shadow:0 18px 50px #000}
+.image-export-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:9px}.image-export-head b{color:#ead18b}
+.image-export-preview{width:100%;border-radius:8px;background:#08131d;border:1px solid #2e4658}
+.image-export-actions{display:flex;gap:8px;margin-top:10px}.image-export-actions button,.image-export-actions a{flex:1;text-align:center;padding:10px;border-radius:8px;border:1px solid #536b7e;background:#173047;color:#fff;font-weight:900;text-decoration:none}
+#formationExportCanvas{display:none}
+</style>
+
+
+<style id="bottom-image-export-style">
+.bottom-image-export{
+  display:flex;
+  justify-content:center;
+  margin:16px 0 22px;
+  padding:0 2px;
+}
+.bottom-image-export-btn{
+  width:min(100%,420px);
+  min-height:44px;
+  font-size:14px;
+  letter-spacing:.04em;
+}
+</style>
+
 </head>
 <body>
 <div class="app">
@@ -505,11 +573,33 @@ body.ui-overlay-open .flag-slot .clear{
     <button type="button" class="section-tab" data-panel="detailsPanel">武将データ</button>
   </div>
   <div id="skillsPanel" class="section tab-panel active"><h2>有効技能・技能一覧</h2><div id="kaidenEditor" class="feature-editor"></div><div class="domestic-filter-row"><label class="domestic-toggle"><input id="excludeDomestic" type="checkbox"> 内政系技能を除外</label><label class="domestic-toggle"><input id="showDomesticOnly" type="checkbox"> 内政系のみ表示</label><label class="domestic-toggle"><input id="showFavoriteSkillsOnly" type="checkbox"> ★お気に入り技能のみ</label></div><div id="skills" class="chips"><span class="placeholder">選択した武将の技能を集計します</span></div></div>
-  <div id="chainsPanel" class="section tab-panel"><h2>上下接続の連鎖率</h2><div id="tsuienEditor" class="feature-editor"></div><div id="chains" class="chain-list"><span class="placeholder">上下でつながる武将を選択すると連鎖率を計算します</span></div></div>
-  <div id="abilityPanel" class="section tab-panel"><h2>能力補正</h2><div id="abilityAdjustments"><span class="placeholder">能力補正の集計表示は今後この欄に反映します</span></div></div>
+  <div id="chainsPanel" class="section tab-panel"><h2>上下接続の連鎖率</h2><div id="tsuienEditor" class="feature-editor"></div><div id="chains" class="chain-list"><span class="placeholder">上下でつながる武将を選択すると連鎖率を計算します</span></div>
+<div class="tactic-summary-section">
+  <h3>編成の戦法効果まとめ</h3>
+  <div id="tacticEffectSummary"><span class="placeholder">武将を編成すると戦法効果をまとめて表示します</span></div>
+</div></div>
+  <div id="abilityPanel" class="section tab-panel"><h2>能力補正</h2>
+<div class="battle-condition-box">
+  <div class="battle-condition-title">技能条件の設定 <small>実戦状況をON/OFF</small></div>
+  <div class="battle-condition-grid">
+    <label><input type="checkbox" data-battle-condition="hp50plus"> 兵力50%以上</label>
+    <label><input type="checkbox" data-battle-condition="hp50minus"> 兵力50%以下</label>
+    <label><input type="checkbox" data-battle-condition="ownTerritory"> 自大名家の領土内</label>
+    <label><input type="checkbox" data-battle-condition="enemyTerritory"> 敵大名家の領土内</label>
+    <label><input type="checkbox" data-battle-condition="ownSiege"> 自大名家所有の城・砦・港の攻城戦</label>
+    <label><input type="checkbox" data-battle-condition="enemySiege"> 敵大名家所有の城・砦・港の攻城戦</label>
+    <label><input type="checkbox" data-battle-condition="sea"> 海上</label>
+    <label><input type="checkbox" data-battle-condition="ambush"> 待伏命令時</label>
+  </div>
+  <div class="battle-condition-note">ONにした条件を、能力補正での技能発動判定に使用します。条件と技能の対応は登録済みのものから反映します。</div>
+</div>
+<div id="abilityAdjustments"><span class="placeholder">能力補正の集計表示は今後この欄に反映します</span></div></div>
   <div id="detailsPanel" class="section tab-panel"><h2>武将別データ</h2><div id="details" class="detail-list"><span class="placeholder">各枠をタップして武将を選択してください</span></div></div>
 </div>
 
+<div class="bottom-image-export">
+  <button type="button" id="exportFormationImage" class="save-btn export bottom-image-export-btn">画像出力</button>
+</div>
 
 <div id="generalDetailOverlay" class="general-detail-overlay" aria-hidden="true">
   <div class="general-detail-card" role="dialog" aria-modal="true" aria-labelledby="generalDetailOverlayTitle">
@@ -519,11 +609,28 @@ body.ui-overlay-open .flag-slot .clear{
   </div>
 </div>
 
+
+<div id="imageExportOverlay" aria-hidden="true">
+  <div class="image-export-card">
+    <div class="image-export-head"><b>編成画像</b><button type="button" id="closeImageExport" class="close">閉じる</button></div>
+    <img id="imageExportPreview" class="image-export-preview" alt="編成画像プレビュー">
+    <div class="image-export-actions"><a id="downloadFormationImage" download="信長覇道_編成.png">画像を保存</a></div>
+  </div>
+</div>
+<canvas id="formationExportCanvas"></canvas>
+
 <div id="modal" class="modal"><div class="sheet">
   <div class="sheet-head"><h3 id="modalTitle">武将選択</h3><button id="closeModal" class="close">閉じる</button></div>
   <input id="search" class="search" type="search" placeholder="武将名・技能・縁で検索" />
   <div id="favoriteGeneralFilter" class="filterbar favorite-general-filter"><button type="button" data-favorite-general="all" class="active">すべて</button><button type="button" data-favorite-general="fav">★ お気に入り武将</button></div>
-  <div id="aptitudeFilter" class="filterbar"><button data-filter="all" class="active">すべて</button><button data-filter="S">適性S</button><button data-filter="A+">A以上</button></div>
+  <div id="aptitudeFilter" class="filterbar">
+  <button type="button" data-aptitude="all" class="active">すべて</button>
+  <button type="button" data-aptitude="S">適性S</button>
+  <button type="button" data-aptitude="A+">A以上</button>
+  <button type="button" data-special-filter="UR">UR</button>
+  <button type="button" data-special-filter="900">900</button>
+  <button type="button" data-special-filter="850">850</button>
+</div>
   <div id="commanderSkillFilter" class="filterbar commander-skill-filter" style="display:none"><span class="sort-label">大将発動技能</span><button data-commander-skill="" class="active">指定なし</button><button data-commander-skill="慧眼">慧眼</button><button data-commander-skill="兵家">兵家</button><button data-commander-skill="柱石">柱石</button><button data-commander-skill="求心">求心</button><button data-commander-skill="威光">威光</button><button data-commander-skill="大勇">大勇</button><button data-commander-skill="俊才">俊才</button><button data-commander-skill="強襲">強襲</button><button data-commander-skill="牽引">牽引</button><button data-commander-skill="速攻">速攻</button></div>
   <div id="deputySkillFilter" class="filterbar deputy-skill-filter" style="display:none"><span class="sort-label">副将発動技能</span><button data-deputy-skill="" class="active">指定なし</button><button data-deputy-skill="忠義">忠義</button><button data-deputy-skill="参謀">参謀</button><button data-deputy-skill="牽引">牽引</button><button data-deputy-skill="速攻">速攻</button></div>
   <div id="assistSkillFilter" class="filterbar assist-skill-filter" style="display:none"><span class="sort-label">与力発動技能</span><button data-assist-skill="" class="active">指定なし</button><button data-assist-skill="忠義">忠義</button><button data-assist-skill="参謀">参謀</button></div>
@@ -573,9 +680,11 @@ const roles=["大将","副将1","副将2","与力1","与力2","与力3","与力4
 const flagRoles=["旗持1","旗持2","旗持3"];
 const allRoles=[...roles,...flagRoles];
 const makeSelected=()=>Object.fromEntries(allRoles.map(r=>[r,null]));
-const formationStates=Array.from({length:6},()=>({branch:"騎馬",armor:false,selected:makeSelected()}));
+const makeBattleConditions=()=>({hp50plus:false,hp50minus:false,ownTerritory:false,enemyTerritory:false,ownSiege:false,enemySiege:false,sea:false,ambush:false});
+const formationStates=Array.from({length:6},()=>({branch:"騎馬",armor:false,selected:makeSelected(),battleConditions:makeBattleConditions()}));
 let activeFormation=0;
-let branch=formationStates[0].branch; let armor=!!formationStates[0].armor; let selected=formationStates[0].selected; let activeRole=null; let filter="all"; let sortMode="default"; let minTieMatches=0; let commanderSkill=""; let deputySkill=""; let assistSkill="";
+let battleConditions=formationStates[0].battleConditions;
+let branch=formationStates[0].branch; let armor=!!formationStates[0].armor; let selected=formationStates[0].selected; let activeRole=null; let filter="all"; const specialGeneralFilters=new Set(); let sortMode="default"; let minTieMatches=0; let commanderSkill=""; let deputySkill=""; let assistSkill="";
 const DOMESTIC_SKILLS=new Set(["兵站","口利","大漁","振興","農業","伐採","石工","治金","冶金","利殖","兵心","練磨","巡見","警戒","監督","能吏","人脈","宰相"]);
 let excludeDomesticSkills=false;
 let showDomesticOnly=false;
@@ -617,11 +726,12 @@ function syncOverlayDeleteLock(){
   const anyOpen=
     $('#modal')?.classList.contains('open') ||
     $('#branchMenu')?.classList.contains('open') ||
-    $('#generalDetailOverlay')?.classList.contains('open');
+    $('#generalDetailOverlay')?.classList.contains('open') ||
+    $('#imageExportOverlay')?.classList.contains('open');
   document.body.classList.toggle('ui-overlay-open',!!anyOpen);
   if(!anyOpen)updateExternalClearButtons();
 }
-function openPicker(role){activeRole=role; $('#modalTitle').textContent=role+'の武将を選択'; $('#search').value=''; filter='all'; favoriteGeneralOnly=false; sortMode='default'; minTieMatches=0; commanderSkill=''; deputySkill=''; assistSkill=''; $$('.filterbar:not(.tiefilterbar):not(.commander-skill-filter):not(.deputy-skill-filter):not(.assist-skill-filter) button').forEach((b,i)=>b.classList.toggle('active',i===0)); $$('#favoriteGeneralFilter button').forEach(b=>b.classList.toggle('active',b.dataset.favoriteGeneral==='all')); $$('.tiefilterbar button').forEach(b=>b.classList.toggle('active',b.dataset.minTies==='0')); $$('.commander-skill-filter button').forEach(b=>b.classList.toggle('active',b.dataset.commanderSkill==='')); $$('.deputy-skill-filter button').forEach(b=>b.classList.toggle('active',b.dataset.deputySkill==='')); $$('.assist-skill-filter button').forEach(b=>b.classList.toggle('active',b.dataset.assistSkill==='')); $('#commanderSkillFilter').style.display=role==='大将'?'flex':'none'; $('#deputySkillFilter').style.display=(role==='副将1'||role==='副将2')?'flex':'none'; $('#assistSkillFilter').style.display=role.startsWith('与力')?'flex':'none'; const isFlag=flagRoles.includes(role); $('#aptitudeFilter').style.display=isFlag?'none':'flex'; $('#tieFilter').style.display=isFlag?'none':'flex'; $('#chainSort').style.display=isFlag?'none':'inline-block'; $('#tieSort').style.display=isFlag?'none':'inline-block'; $('#flagCommonSort').style.display=isFlag?'inline-block':'none'; $('#flagDomesticToggle').style.display=isFlag?'block':'none'; $('#excludeFlagDomestic').checked=excludeFlagDomesticSkills; $$('.sortbar button').forEach(b=>b.classList.toggle('active',b.dataset.sort==='default')); renderCandidates(); $('#modal').classList.add('open');syncOverlayDeleteLock()}
+function openPicker(role){activeRole=role; $('#modalTitle').textContent=role+'の武将を選択'; $('#search').value=''; filter='all'; specialGeneralFilters.clear(); favoriteGeneralOnly=false; sortMode='default'; minTieMatches=0; commanderSkill=''; deputySkill=''; assistSkill=''; $$('#aptitudeFilter button').forEach(b=>b.classList.remove('active')); $$('#favoriteGeneralFilter button').forEach(b=>b.classList.toggle('active',b.dataset.favoriteGeneral==='all')); $$('#aptitudeFilter button[data-aptitude]').forEach(b=>b.classList.toggle('active',b.dataset.aptitude==='all')); $$('#aptitudeFilter button[data-special-filter]').forEach(b=>b.classList.remove('active')); $$('.tiefilterbar button').forEach(b=>b.classList.toggle('active',b.dataset.minTies==='0')); $$('.commander-skill-filter button').forEach(b=>b.classList.toggle('active',b.dataset.commanderSkill==='')); $$('.deputy-skill-filter button').forEach(b=>b.classList.toggle('active',b.dataset.deputySkill==='')); $$('.assist-skill-filter button').forEach(b=>b.classList.toggle('active',b.dataset.assistSkill==='')); $('#commanderSkillFilter').style.display=role==='大将'?'flex':'none'; $('#deputySkillFilter').style.display=(role==='副将1'||role==='副将2')?'flex':'none'; $('#assistSkillFilter').style.display=role.startsWith('与力')?'flex':'none'; const isFlag=flagRoles.includes(role); $('#aptitudeFilter').style.display=isFlag?'none':'flex'; $('#tieFilter').style.display=isFlag?'none':'flex'; $('#chainSort').style.display=isFlag?'none':'inline-block'; $('#tieSort').style.display=isFlag?'none':'inline-block'; $('#flagCommonSort').style.display=isFlag?'inline-block':'none'; $('#flagDomesticToggle').style.display=isFlag?'block':'none'; $('#excludeFlagDomestic').checked=excludeFlagDomesticSkills; $$('.sortbar button').forEach(b=>b.classList.toggle('active',b.dataset.sort==='default')); renderCandidates(); $('#modal').classList.add('open');syncOverlayDeleteLock()}
 function closePicker(){ $('#modal').classList.remove('open');syncOverlayDeleteLock() }
 function candidateMatch(x,q){const hay=[x['武将名'],x['技能1'],x['技能2'],x['技能3'],x['技能4'],x['縁1'],x['縁2'],x['縁3'],x['縁4'],x['縁5']].filter(Boolean).join(' ').toLowerCase();return hay.includes(q.toLowerCase())}
 function chooseGeneral(x,star4=false){
@@ -718,11 +828,72 @@ function flagCandidateCommonInfo(x){
   const skills=[...target].filter(k=>candidate.has(k));
   return {score:skills.length,skills};
 }
+
+function compareDeltaText(before,after,suffix=''){
+  if(before===null||before===undefined||after===null||after===undefined)return '';
+  const d=Math.round((Number(after)-Number(before))*10)/10;
+  if(!Number.isFinite(d)||d===0)return `<span class="same">±0${suffix}</span>`;
+  return `<span class="${d>0?'up':'down'}">${d>0?'+':''}${d}${suffix}</span>`;
+}
+function candidateSwapComparisonHtml(x,m){
+  const current=selected[activeRole];
+  if(!current||flagRoles.includes(activeRole))return '';
+  if(current['武将名']===x['武将名'])return `<span class="cand-compare"><span class="cand-compare-title">現在選択中</span></span>`;
+
+  const cm=candidateMetrics(current);
+  const curTalent=Number(current['天賦']);
+  const newTalent=Number(x['天賦']);
+  const curGrade=clean(current[branch]);
+  const newGrade=clean(x[branch]);
+
+  let chainHtml='';
+  if(activeRole==='副将1'||activeRole==='副将2'){
+    const cc=cm.groups?.commander||{}, nc=m.groups?.commander||{};
+    const ca=cm.groups?.assist||{}, na=m.groups?.assist||{};
+    const c1=(cc.pairs||nc.pairs)?`<span class="cand-compare-item">大将連鎖 ${cc.chain==null?'―':formatRate(cc.chain)} → ${nc.chain==null?'―':formatRate(nc.chain)} ${compareDeltaText(cc.chain,nc.chain,'%')}</span>`:'';
+    const c2=(cc.pairs||nc.pairs)?`<span class="cand-compare-item">大将縁 ${cc.ties||0} → ${nc.ties||0} ${compareDeltaText(cc.ties||0,nc.ties||0,'')}</span>`:'';
+    const a1=(ca.pairs||na.pairs)?`<span class="cand-compare-item">与力連鎖 ${ca.chain==null?'―':formatRate(ca.chain)} → ${na.chain==null?'―':formatRate(na.chain)} ${compareDeltaText(ca.chain,na.chain,'%')}</span>`:'';
+    const a2=(ca.pairs||na.pairs)?`<span class="cand-compare-item">与力縁 ${ca.ties||0} → ${na.ties||0} ${compareDeltaText(ca.ties||0,na.ties||0,'')}</span>`:'';
+    chainHtml=[c1,c2,a1,a2].filter(Boolean).join('');
+  }else{
+    chainHtml=(cm.pairs||m.pairs)
+      ? `<span class="cand-compare-item">連鎖 ${cm.chain==null?'―':formatRate(cm.chain)} → ${m.chain==null?'―':formatRate(m.chain)} ${compareDeltaText(cm.chain,m.chain,'%')}</span><span class="cand-compare-item">縁一致 ${cm.ties||0} → ${m.ties||0} ${compareDeltaText(cm.ties||0,m.ties||0,'')}</span>`
+      : '';
+  }
+
+  const curSkills=new Set(getSkills(current).map(skillBaseName));
+  const newSkills=new Set(getSkills(x).map(skillBaseName));
+  const gain=[...newSkills].filter(k=>!curSkills.has(k));
+  const loss=[...curSkills].filter(k=>!newSkills.has(k));
+  const skillHtml=(gain.length||loss.length)
+    ? `<div class="cand-compare-skills">${gain.length?`<span class="gain">追加：${gain.map(escapeHtml).join(' / ')}</span>`:''}${gain.length&&loss.length?'　':''}${loss.length?`<span class="loss">消失：${loss.map(escapeHtml).join(' / ')}</span>`:''}</div>`
+    : `<div class="cand-compare-skills"><span class="same">技能構成の増減なし</span></div>`;
+
+  return `<span class="cand-compare">
+    <span class="cand-compare-title">入替比較：${escapeHtml(current['武将名'])} → ${escapeHtml(x['武将名'])}</span>
+    <span class="cand-compare-row">
+      <span class="cand-compare-item">天賦 ${Number.isFinite(curTalent)?curTalent:'―'} → ${Number.isFinite(newTalent)?newTalent:'―'} ${compareDeltaText(curTalent,newTalent,'')}</span>
+      <span class="cand-compare-item">${escapeHtml(branch)}適性 ${escapeHtml(curGrade)} → ${escapeHtml(newGrade)}</span>
+      ${chainHtml}
+    </span>
+    ${skillHtml}
+  </span>`;
+}
 function renderCandidates(){
   const q=$('#search').value.trim();
   let arr=DB.filter(x=>!q||candidateMatch(x,q));
   if(favoriteGeneralOnly)arr=arr.filter(x=>isFavoriteGeneral(x['武将名']));
-  if(!flagRoles.includes(activeRole))arr=arr.filter(x=>filter==='all'||(filter==='S'?x[branch]==='S':(gradeRank[x[branch]]||0)>=4));
+  if(!flagRoles.includes(activeRole)){
+    if(filter==='S')arr=arr.filter(x=>x[branch]==='S');
+    else if(filter==='A+')arr=arr.filter(x=>(gradeRank[x[branch]]||0)>=4);
+    if(specialGeneralFilters.size){
+      arr=arr.filter(x=>
+        (specialGeneralFilters.has('UR')&&x['レアリティ']==='UR') ||
+        (specialGeneralFilters.has('900')&&Number(x['天賦'])===900) ||
+        (specialGeneralFilters.has('850')&&Number(x['天賦'])===850)
+      );
+    }
+  }
   if(activeRole==='大将'&&commanderSkill)arr=arr.filter(x=>[x['技能1'],x['技能2'],x['技能3'],x['技能4']].includes(commanderSkill));
   if((activeRole==='副将1'||activeRole==='副将2')&&deputySkill)arr=arr.filter(x=>[x['技能1'],x['技能2'],x['技能3'],x['技能4']].includes(deputySkill));
   if(activeRole&&activeRole.startsWith('与力')&&assistSkill)arr=arr.filter(x=>[x['技能1'],x['技能2'],x['技能3'],x['技能4']].includes(assistSkill));
@@ -765,8 +936,9 @@ function renderCandidates(){
         ? `<span class="cand-metrics">連鎖率 ${m.chain===null?'計算待ち':formatRate(m.chain)} ・ 縁一致 ${m.ties}個</span>`
         : '<span class="cand-metrics">接続先の武将を選択すると連鎖率・縁一致を比較できます</span>';
     }
+    const compareHtml=candidateSwapComparisonHtml(x,m);
     const isUR=x['レアリティ']==='UR'; const currentStar4=!!(usage&&usage.general&&usage.general.__star4); const fav=isFavoriteGeneral(x['武将名']); const skillText=[x['技能1'],x['技能2'],x['技能3'],x['技能4']].filter(Boolean).map((v,i)=>isUR&&i===3&&!currentStar4?`<span class="star4-off">${escapeHtml(v)}</span>`:escapeHtml(v)).join(' / ')||'未登録';
-    return `<button class="cand" data-index="${DB.indexOf(x)}"><div class="cand-main"><div style="flex:1;min-width:0"><div class="cand-top"><b>${x['武将名']}</b><div class="cand-rank"><label class="favorite-general-toggle${fav?' is-favorite':''}" title="お気に入り武将"><input type="checkbox" class="favorite-general-check" ${fav?'checked':''}><span>${fav?'★':'☆'}</span></label>${isUR?`<label class="star4-toggle" title="将星ランク4以上で技能4を有効化"><input type="checkbox" class="star4-check" ${currentStar4?'checked':''}>★4</label>`:''}<span class="grade"><span class="branch-glyph">${branchIconSvg(branch)}</span>${escapeHtml(branch)} ${rankGradeHtml(clean(x[branch]))}</span></div></div><small>天賦 ${clean(x['天賦'])} ・ 技能 ${skillText}${metricText}${usedText}</small></div></div></button>`
+    return `<button class="cand" data-index="${DB.indexOf(x)}"><div class="cand-main"><div style="flex:1;min-width:0"><div class="cand-top"><b>${x['武将名']}</b><div class="cand-rank"><label class="favorite-general-toggle${fav?' is-favorite':''}" title="お気に入り武将"><input type="checkbox" class="favorite-general-check" ${fav?'checked':''}><span>${fav?'★':'☆'}</span></label>${isUR?`<label class="star4-toggle" title="将星ランク4以上で技能4を有効化"><input type="checkbox" class="star4-check" ${currentStar4?'checked':''}>★4</label>`:''}<span class="grade"><span class="branch-glyph">${branchIconSvg(branch)}</span>${escapeHtml(branch)} ${rankGradeHtml(clean(x[branch]))}</span></div></div><small>天賦 ${clean(x['天賦'])} ・ 技能 ${skillText}${metricText}${compareHtml}${usedText}</small></div></div></button>`
   }).join('')||'<div class="placeholder">該当する武将がいません</div>';
   $$('.favorite-general-toggle').forEach(label=>{
     label.addEventListener('click',e=>{e.stopPropagation();});
@@ -1035,9 +1207,98 @@ function currentBattleIntervalData(){
 
 
 
+
+const SKILL_BATTLE_CONDITIONS={
+  // 例: '技能名':['hp50plus'] の形式で登録。
+  // 数値効果が確認済みの技能から順次ここへ追加する。
+};
+function battleConditionSatisfied(name){
+  const req=SKILL_BATTLE_CONDITIONS[name];
+  if(!req||!req.length)return true;
+  return req.every(k=>!!battleConditions[k]);
+}
+function renderBattleConditionControls(){
+  
+function exportImageRoleOrder(){
+  const orderRank={早い:0,普通:1,遅い:2};
+  const roleRank={大将:0,副将1:1,与力1:2,与力2:3,副将2:4,与力3:5,与力4:6};
+  return roles.filter(r=>selected[r]).map(role=>({role,x:selected[role]}))
+    .sort((a,b)=>(orderRank[a.x['連鎖順']]??1)-(orderRank[b.x['連鎖順']]??1)||(roleRank[a.role]??99)-(roleRank[b.role]??99));
+}
+function drawWrappedText(ctx,text,x,y,maxWidth,lineHeight,maxLines=99){
+  const chars=[...String(text||'')];let line='',lines=[];
+  for(const ch of chars){
+    const test=line+ch;
+    if(ctx.measureText(test).width>maxWidth&&line){lines.push(line);line=ch;if(lines.length>=maxLines)break}else line=test;
+  }
+  if(lines.length<maxLines&&line)lines.push(line);
+  lines.forEach((l,i)=>ctx.fillText(l,x,y+i*lineHeight));
+  return y+lines.length*lineHeight;
+}
+function generateFormationImage(){
+  const canvas=$('#formationExportCanvas'),ctx=canvas.getContext('2d');
+  const width=1080,pad=54,rowH=118;
+  const selectedRows=roles.filter(r=>selected[r]);
+  const tacticRows=exportImageRoleOrder();
+  const height=270+selectedRows.length*rowH+90+tacticRows.reduce((s,o)=>s+150+Math.min(3,Math.ceil(String(o.x['戦法効果']||'').length/38))*28,0);
+  canvas.width=width;canvas.height=Math.max(900,height);
+  ctx.fillStyle='#08131d';ctx.fillRect(0,0,canvas.width,canvas.height);
+  ctx.fillStyle='#e8cf87';ctx.font='bold 42px sans-serif';ctx.fillText(`信長の野望 覇道　編制${activeFormation+1}`,pad,68);
+  ctx.fillStyle='#9db2c2';ctx.font='26px sans-serif';ctx.fillText(`兵科：${equippedBranchName(branch,armor)}　編成人数：${selectedRows.length}/7`,pad,112);
+  ctx.strokeStyle='#385267';ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(pad,140);ctx.lineTo(width-pad,140);ctx.stroke();
+
+  ctx.fillStyle='#e8cf87';ctx.font='bold 30px sans-serif';ctx.fillText('編成',pad,190);
+  let y=225;
+  selectedRows.forEach(role=>{
+    const x=selected[role];
+    ctx.fillStyle='#102536';ctx.fillRect(pad,y,width-pad*2,rowH-12);
+    ctx.fillStyle='#90aabd';ctx.font='bold 23px sans-serif';ctx.fillText(role,pad+18,y+35);
+    ctx.fillStyle='#fff';ctx.font='bold 30px sans-serif';ctx.fillText(x['武将名'],pad+155,y+38);
+    ctx.fillStyle='#d7c17e';ctx.font='22px sans-serif';ctx.fillText(`${x['戦法名']||'戦法名なし'}　／　連鎖順 ${x['連鎖順']||'普通'}`,pad+155,y+76);
+    ctx.fillStyle='#a9bdcb';ctx.fillText(`天賦 ${x['天賦']||'―'}　${branch}適性 ${x[branch]||'―'}`,pad+650,y+76);
+    y+=rowH;
+  });
+
+  y+=30;ctx.fillStyle='#e8cf87';ctx.font='bold 30px sans-serif';ctx.fillText('戦法効果まとめ',pad,y);y+=45;
+  tacticRows.forEach((o,i)=>{
+    const x=o.x,effect=String(x['戦法効果']||'戦法効果未登録');
+    ctx.fillStyle='#102536';ctx.fillRect(pad,y,width-pad*2,142+Math.min(3,Math.ceil(effect.length/38))*28);
+    ctx.fillStyle='#e8cf87';ctx.font='bold 25px sans-serif';ctx.fillText(`${i+1}. ${o.role}　${x['戦法名']||'戦法名なし'}`,pad+18,y+38);
+    ctx.fillStyle='#fff';ctx.font='22px sans-serif';ctx.fillText(`${x['武将名']}　［${x['連鎖順']||'普通'}］`,pad+18,y+72);
+    ctx.fillStyle='#c4d2dc';ctx.font='21px sans-serif';
+    const end=drawWrappedText(ctx,effect,pad+18,y+108,width-pad*2-36,28,4);
+    y=Math.max(y+170,end+26);
+  });
+  return canvas.toDataURL('image/png');
+}
+function openFormationImageExport(){
+  try{
+    const url=generateFormationImage();
+    $('#imageExportPreview').src=url;
+    const d=new Date(),p=n=>String(n).padStart(2,'0');
+    $('#downloadFormationImage').download=`信長覇道_編制${activeFormation+1}_${d.getFullYear()}${p(d.getMonth()+1)}${p(d.getDate())}_${p(d.getHours())}${p(d.getMinutes())}.png`;
+    $('#downloadFormationImage').href=url;
+    $('#imageExportOverlay').classList.add('open');
+    $('#imageExportOverlay').setAttribute('aria-hidden','false');
+    syncOverlayDeleteLock();
+  }catch(e){alert('画像の作成に失敗しました。');}
+}
+function closeFormationImageExport(){
+  $('#imageExportOverlay').classList.remove('open');
+  $('#imageExportOverlay').setAttribute('aria-hidden','true');
+  syncOverlayDeleteLock();
+}
+$('#exportFormationImage')?.addEventListener('click',openFormationImageExport);
+$('#closeImageExport')?.addEventListener('click',closeFormationImageExport);
+$('#imageExportOverlay')?.addEventListener('click',e=>{if(e.target===$('#imageExportOverlay'))closeFormationImageExport();});
+
+document.querySelectorAll('[data-battle-condition]').forEach(c=>{
+    c.checked=!!battleConditions[c.dataset.battleCondition];
+  });
+}
 function skillListEffective(name,speedActive){
   const speedConditional=new Set(['神算','看破','迅速','才略','武烈','一念','耀翼','剣抜','勇士','神気']);
-  return skillIsActive(name)&&!(speedConditional.has(name)&&!speedActive.has(name));
+  return skillIsActive(name)&&battleConditionSatisfied(name)&&!(speedConditional.has(name)&&!speedActive.has(name));
 }
 function effectValueForSkill(name,level,target,effect){
   const values=effect[target];
@@ -1348,6 +1609,33 @@ function calcSkillBonus(upRole,downRole,up,down){
   }
   return {bonus,parts};
 }
+
+function tacticEffectCategories(effect){
+  const s=String(effect||'');
+  const out=[];
+  if(/攻撃|ダメージ/.test(s))out.push('攻撃');
+  if(/上昇|付与|結束|堅固|金剛|硬壁|泰然|高揚|見切|不退/.test(s))out.push('味方強化');
+  if(/低下|弱化|疑心|混乱|同討|動揺|炎上/.test(s))out.push('敵弱体・状態異常');
+  if(/解除|打消|無効/.test(s))out.push('解除・無効');
+  return [...new Set(out)];
+}
+function renderTacticEffectSummary(){
+  const el=$('#tacticEffectSummary');if(!el)return;
+  const orderRank={早い:0,普通:1,遅い:2};
+  const roleRank={大将:0,副将1:1,与力1:2,与力2:3,副将2:4,与力3:5,与力4:6};
+  const arr=roles.filter(r=>selected[r]).map(role=>({role,x:selected[role]}))
+    .sort((a,b)=>(orderRank[a.x['連鎖順']]??1)-(orderRank[b.x['連鎖順']]??1)||(roleRank[a.role]??99)-(roleRank[b.role]??99));
+  if(!arr.length){el.innerHTML='<span class="placeholder">武将を編成すると戦法効果をまとめて表示します</span>';return;}
+  el.innerHTML=`<div class="tactic-effect-list">${arr.map((o,i)=>{
+    const x=o.x,effect=clean(x['戦法効果'])||'戦法効果未登録';
+    const cats=tacticEffectCategories(effect);
+    return `<div class="tactic-effect-row">
+      <div class="tactic-effect-head"><span class="tactic-effect-order">${i+1}</span><span class="tactic-effect-role">${escapeHtml(o.role)}・${escapeHtml(clean(x['連鎖順'])||'普通')}</span><span class="tactic-effect-name">${escapeHtml(clean(x['戦法名'])||'戦法名なし')}</span><span class="tactic-effect-general">${escapeHtml(x['武将名'])}</span></div>
+      <div class="tactic-effect-body">${escapeHtml(effect)}</div>
+      ${cats.length?`<div>${cats.map(c=>`<span class="tactic-effect-category">${escapeHtml(c)}</span>`).join('')}</div>`:''}
+    </div>`;
+  }).join('')}</div>`;
+}
 function renderChains(){
   const rows=chainEdges.map(([upRole,downRole])=>{
     const up=selected[upRole],down=selected[downRole];
@@ -1363,6 +1651,7 @@ function renderChains(){
     return `<div class="chain-row"><div class="chain-head"><span class="chain-pair">${pair}</span><span class="chain-rate">${formatRate(rate)}</span></div><div class="chain-calc">${up['武将名']} → ${down['武将名']}<br>${base} + (${upInt} - ${downInt}) / 5 + ${tieBonus} + ${skillBonus} = ${Math.round(rate*10)/10}<br>縁一致: ${tieText}<br>縁一致補正: ${tieBonus}% / 技能補正: ${skillBonus}%${skillInfo.parts.length?`（${skillInfo.parts.join(' / ')}）`:''}</div></div>`;
   }).filter(Boolean);
   $('#chains').innerHTML=rows.length?rows.join(''):'<span class="placeholder">上下でつながる武将を選択すると連鎖率を計算します</span>';
+  renderTacticEffectSummary();
 }
 function skillBaseName(name){return String(name||'').replace(/[ⅠⅡⅢⅣⅤⅥⅦⅧⅨⅩIVX0-9]+$/g,'').trim()}
 function formationSkillCount(name){return effectiveSkillCount(name)}
@@ -1554,7 +1843,7 @@ function importFormationData(file){
 function showExistingSaveStatus(){
   try{const raw=localStorage.getItem(SAVE_KEY);if(!raw)return;const data=JSON.parse(raw);if(data.savedAt){const d=new Date(data.savedAt);if(!isNaN(d))setSaveStatus(`保存あり：${d.toLocaleString('ja-JP')}`);}}catch(e){}
 }
-function renderAll(){formationStates[activeFormation].branch=branch;formationStates[activeFormation].armor=armor;formationStates[activeFormation].selected=selected;updateBranchDisplay();renderFormationTabs();renderSlots();renderKaidenEditor();renderSummary();renderTsuienEditor();renderChains();renderDetails()}
+function renderAll(){formationStates[activeFormation].branch=branch;formationStates[activeFormation].armor=armor;formationStates[activeFormation].selected=selected;updateBranchDisplay();renderFormationTabs();renderSlots();renderKaidenEditor();renderSummary();renderTsuienEditor();renderChains();renderDetails();renderBattleConditionControls()}
 
 function openBranchMenuLocked(){
   renderBranchMenu();
@@ -1620,11 +1909,42 @@ $('#excludeFlagDomestic').addEventListener('change',e=>{excludeFlagDomesticSkill
 $('#closeModal').onclick=closePicker;$('#closeGeneralDetailOverlay').onclick=closeGeneralDetailOverlay;$('#generalDetailOverlay').addEventListener('click',e=>{if(e.target===$('#generalDetailOverlay'))closeGeneralDetailOverlay();});$('#modal').addEventListener('click',e=>{if(e.target===$('#modal'))closePicker()});$('#search').addEventListener('input',renderCandidates);
 $('#favoriteGeneralFilter').addEventListener('click',e=>{const b=e.target.closest('button[data-favorite-general]');if(!b)return;favoriteGeneralOnly=b.dataset.favoriteGeneral==='fav';$$('#favoriteGeneralFilter button').forEach(x=>x.classList.toggle('active',x===b));renderCandidates();});
 $('#showFavoriteSkillsOnly').addEventListener('change',e=>{showFavoriteSkillsOnly=e.target.checked;renderSummary();});
-$$('.filterbar:not(.tiefilterbar):not(.commander-skill-filter):not(.deputy-skill-filter):not(.assist-skill-filter) button').forEach(b=>b.onclick=()=>{filter=b.dataset.filter;$$('.filterbar:not(.tiefilterbar):not(.commander-skill-filter):not(.deputy-skill-filter):not(.assist-skill-filter) button').forEach(x=>x.classList.toggle('active',x===b));renderCandidates()});$$('.commander-skill-filter button').forEach(b=>b.onclick=()=>{commanderSkill=b.dataset.commanderSkill||'';$$('.commander-skill-filter button').forEach(x=>x.classList.toggle('active',x===b));renderCandidates()});$$('.deputy-skill-filter button').forEach(b=>b.onclick=()=>{deputySkill=b.dataset.deputySkill||'';$$('.deputy-skill-filter button').forEach(x=>x.classList.toggle('active',x===b));renderCandidates()});$$('.assist-skill-filter button').forEach(b=>b.onclick=()=>{assistSkill=b.dataset.assistSkill||'';$$('.assist-skill-filter button').forEach(x=>x.classList.toggle('active',x===b));renderCandidates()});$$('.tiefilterbar button').forEach(b=>b.onclick=()=>{minTieMatches=+b.dataset.minTies;$$('.tiefilterbar button').forEach(x=>x.classList.toggle('active',x===b));renderCandidates()});$$('.sortbar button').forEach(b=>b.onclick=()=>{sortMode=b.dataset.sort;$$('.sortbar button').forEach(x=>x.classList.toggle('active',x===b));renderCandidates()});$('#resetCurrent').onclick=resetCurrentFormation;$('#resetAll').onclick=resetAllFormations;$('#saveFormation').onclick=saveFormationData;$('#loadFormation').onclick=loadFormationData;$('#exportFormation').onclick=exportFormationData;$('#importFormation').onclick=()=>$('#importFormationFile').click();$('#importFormationFile').addEventListener('change',e=>importFormationData(e.target.files&&e.target.files[0]));$('#branchBtn').onclick=openBranchMenuLocked;$('#branchMenu').addEventListener('click',e=>{if(e.target===$('#branchMenu'))closeBranchMenuLocked()});
+$$('#aptitudeFilter button[data-aptitude]').forEach(b=>b.onclick=()=>{
+  filter=b.dataset.aptitude;
+  $$('#aptitudeFilter button[data-aptitude]').forEach(x=>x.classList.toggle('active',x===b));
+  renderCandidates();
+});
+$$('#aptitudeFilter button[data-special-filter]').forEach(b=>b.onclick=()=>{
+  const key=b.dataset.specialFilter;
+  if(specialGeneralFilters.has(key))specialGeneralFilters.delete(key);else specialGeneralFilters.add(key);
+  b.classList.toggle('active',specialGeneralFilters.has(key));
+  renderCandidates();
+});$$('.commander-skill-filter button').forEach(b=>b.onclick=()=>{commanderSkill=b.dataset.commanderSkill||'';$$('.commander-skill-filter button').forEach(x=>x.classList.toggle('active',x===b));renderCandidates()});$$('.deputy-skill-filter button').forEach(b=>b.onclick=()=>{deputySkill=b.dataset.deputySkill||'';$$('.deputy-skill-filter button').forEach(x=>x.classList.toggle('active',x===b));renderCandidates()});$$('.assist-skill-filter button').forEach(b=>b.onclick=()=>{assistSkill=b.dataset.assistSkill||'';$$('.assist-skill-filter button').forEach(x=>x.classList.toggle('active',x===b));renderCandidates()});$$('.tiefilterbar button').forEach(b=>b.onclick=()=>{minTieMatches=+b.dataset.minTies;$$('.tiefilterbar button').forEach(x=>x.classList.toggle('active',x===b));renderCandidates()});$$('.sortbar button').forEach(b=>b.onclick=()=>{sortMode=b.dataset.sort;$$('.sortbar button').forEach(x=>x.classList.toggle('active',x===b));renderCandidates()});$('#resetCurrent').onclick=resetCurrentFormation;$('#resetAll').onclick=resetAllFormations;$('#saveFormation').onclick=saveFormationData;$('#loadFormation').onclick=loadFormationData;$('#exportFormation').onclick=exportFormationData;$('#importFormation').onclick=()=>$('#importFormationFile').click();$('#importFormationFile').addEventListener('change',e=>importFormationData(e.target.files&&e.target.files[0]));$('#branchBtn').onclick=openBranchMenuLocked;$('#branchMenu').addEventListener('click',e=>{if(e.target===$('#branchMenu'))closeBranchMenuLocked()});
 $$('.section-tab').forEach(btn=>btn.addEventListener('click',()=>{
   $$('.section-tab').forEach(b=>b.classList.toggle('active',b===btn));
   $$('.tab-panel').forEach(p=>p.classList.toggle('active',p.id===btn.dataset.panel));
 }));
+
+document.querySelectorAll('[data-battle-condition]').forEach(c=>c.addEventListener('change',()=>{
+  const key=c.dataset.battleCondition;
+  // 相反条件は同時ONにしない
+  const opposites={
+    hp50plus:'hp50minus',
+    hp50minus:'hp50plus',
+    ownTerritory:'enemyTerritory',
+    enemyTerritory:'ownTerritory',
+    ownSiege:'enemySiege',
+    enemySiege:'ownSiege'
+  };
+  battleConditions[key]=c.checked;
+  if(c.checked&&opposites[key]){
+    battleConditions[opposites[key]]=false;
+  }
+  formationStates[activeFormation].battleConditions=battleConditions;
+  renderBattleConditionControls();
+  renderSummary();
+}));
+
 renderDBNote();
 renderAll();showExistingSaveStatus();
 </script>
