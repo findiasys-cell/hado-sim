@@ -649,29 +649,56 @@ function chooseGeneral(x,star4=false){
   renderAll();
 }
 function candidateMetrics(x){
-  if(!activeRole||flagRoles.includes(activeRole))return {chain:null,ties:0,pairs:0};
+  if(!activeRole||flagRoles.includes(activeRole))return {chain:null,ties:0,pairs:0,groups:{}};
   const usage=findGeneralUsage(x['武将名']);
   const originalActive=selected[activeRole];
   let clearedRole=null, clearedValue=null;
   if(usage&&usage.formation===activeFormation&&usage.role!==activeRole){clearedRole=usage.role;clearedValue=selected[clearedRole];selected[clearedRole]=null;}
   selected[activeRole]=x;
+
   const rates=[]; let ties=0, pairs=0;
+  const groups={commander:{rates:[],ties:0,pairs:0},assist:{rates:[],ties:0,pairs:0},assistRows:[]};
+
   for(const [upRole,downRole] of chainEdges){
     if(upRole!==activeRole&&downRole!==activeRole)continue;
     const up=selected[upRole],down=selected[downRole];
     if(!up||!down)continue;
-    pairs++;
-    ties+=calcTieBonus(up,down).matches.length;
+
+    const tieInfo=calcTieBonus(up,down);
+    const matchCount=tieInfo.matches.length;
     const base=num(down['基礎連鎖']),upInt=num(up['発動間隔']),downInt=num(down['発動間隔']);
+    let rate=null;
     if(base!==null&&upInt!==null&&downInt!==null){
-      const tieBonus=calcTieBonus(up,down).bonus;
       const skillBonus=calcSkillBonus(upRole,downRole,up,down).bonus;
-      rates.push(base+(upInt-downInt)/5+tieBonus+skillBonus);
+      rate=base+(upInt-downInt)/5+tieInfo.bonus+skillBonus;
+      rates.push(rate);
+    }
+    pairs++;
+    ties+=matchCount;
+
+    // 副将候補では「大将との接続」と「与力との接続」を別集計する
+    if(activeRole==='副将1'||activeRole==='副将2'){
+      if(upRole==='大将'){
+        groups.commander.pairs++;
+        groups.commander.ties+=matchCount;
+        if(rate!==null)groups.commander.rates.push(rate);
+      }else if(upRole===activeRole&&downRole.startsWith('与力')){
+        groups.assist.pairs++;
+        groups.assist.ties+=matchCount;
+        if(rate!==null)groups.assist.rates.push(rate);
+        groups.assistRows.push({role:downRole,rate,ties:matchCount});
+      }
     }
   }
+
   selected[activeRole]=originalActive;
   if(clearedRole)selected[clearedRole]=clearedValue;
-  return {chain:rates.length?rates.reduce((a,b)=>a+b,0)/rates.length:null,ties,pairs};
+
+  const avg=a=>a.length?a.reduce((s,v)=>s+v,0)/a.length:null;
+  groups.commander.chain=avg(groups.commander.rates);
+  groups.assist.chain=avg(groups.assist.rates);
+
+  return {chain:avg(rates),ties,pairs,groups};
 }
 function flagCandidateCommonInfo(x){
   if(!activeRole||!flagRoles.includes(activeRole))return {score:0,skills:[]};
@@ -719,7 +746,25 @@ function renderCandidates(){
   $('#candidates').innerHTML=arr.map(x=>{
     const usage=findGeneralUsage(x['武将名']);const same=usage&&usage.formation===activeFormation&&usage.role===activeRole;
     const usedText=usage&&!same?`<span style="display:block;margin-top:4px;color:#ffcf7a;font-weight:700">使用中：編制${usage.formation+1}・${usage.role}（選択で移動）</span>`:'';
-    const m=metrics.get(x); const fi=flagInfos.get(x); const metricText=flagRoles.includes(activeRole)?`<span class="cand-metrics">${fi.skills.length?'共通候補：'+fi.skills.map(escapeHtml).join(' / '):'共通候補なし'}${flagRoles.filter(r=>r!==activeRole&&selected[r]).length===0?'（編制内技能を基準）':''}</span>`:(m.pairs?`<span class="cand-metrics">連鎖率 ${m.chain===null?'計算待ち':formatRate(m.chain)} ・ 縁一致 ${m.ties}個</span>`:'<span class="cand-metrics">接続先の武将を選択すると連鎖率・縁一致を比較できます</span>');
+    const m=metrics.get(x); const fi=flagInfos.get(x);
+    let metricText;
+    if(flagRoles.includes(activeRole)){
+      metricText=`<span class="cand-metrics">${fi.skills.length?'共通候補：'+fi.skills.map(escapeHtml).join(' / '):'共通候補なし'}${flagRoles.filter(r=>r!==activeRole&&selected[r]).length===0?'（編制内技能を基準）':''}</span>`;
+    }else if(activeRole==='副将1'||activeRole==='副将2'){
+      const cg=m.groups?.commander||{pairs:0,chain:null,ties:0};
+      const ag=m.groups?.assist||{pairs:0,chain:null,ties:0};
+      const commanderLine=cg.pairs
+        ? `大将：連鎖率 ${cg.chain===null?'計算待ち':formatRate(cg.chain)} ・ 縁一致 ${cg.ties}個`
+        : '大将：未選択';
+      const assistLine=ag.pairs
+        ? `与力：連鎖率 ${ag.chain===null?'計算待ち':formatRate(ag.chain)} ・ 縁一致 ${ag.ties}個`
+        : '与力：未選択';
+      metricText=`<span class="cand-metrics"><span style="display:block">${commanderLine}</span><span style="display:block">${assistLine}</span></span>`;
+    }else{
+      metricText=m.pairs
+        ? `<span class="cand-metrics">連鎖率 ${m.chain===null?'計算待ち':formatRate(m.chain)} ・ 縁一致 ${m.ties}個</span>`
+        : '<span class="cand-metrics">接続先の武将を選択すると連鎖率・縁一致を比較できます</span>';
+    }
     const isUR=x['レアリティ']==='UR'; const currentStar4=!!(usage&&usage.general&&usage.general.__star4); const fav=isFavoriteGeneral(x['武将名']); const skillText=[x['技能1'],x['技能2'],x['技能3'],x['技能4']].filter(Boolean).map((v,i)=>isUR&&i===3&&!currentStar4?`<span class="star4-off">${escapeHtml(v)}</span>`:escapeHtml(v)).join(' / ')||'未登録';
     return `<button class="cand" data-index="${DB.indexOf(x)}"><div class="cand-main"><div style="flex:1;min-width:0"><div class="cand-top"><b>${x['武将名']}</b><div class="cand-rank"><label class="favorite-general-toggle${fav?' is-favorite':''}" title="お気に入り武将"><input type="checkbox" class="favorite-general-check" ${fav?'checked':''}><span>${fav?'★':'☆'}</span></label>${isUR?`<label class="star4-toggle" title="将星ランク4以上で技能4を有効化"><input type="checkbox" class="star4-check" ${currentStar4?'checked':''}>★4</label>`:''}<span class="grade"><span class="branch-glyph">${branchIconSvg(branch)}</span>${escapeHtml(branch)} ${rankGradeHtml(clean(x[branch]))}</span></div></div><small>天賦 ${clean(x['天賦'])} ・ 技能 ${skillText}${metricText}${usedText}</small></div></div></button>`
   }).join('')||'<div class="placeholder">該当する武将がいません</div>';
