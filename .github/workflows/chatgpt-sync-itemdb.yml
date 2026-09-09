@@ -1,0 +1,30 @@
+name: ChatGPT sync item DB
+on: push
+permissions:
+  contents: write
+jobs:
+  sync:
+    if: github.event.head_commit.message == 'Sync latest item DB'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Update item DB entry
+        env:
+          ITEM_B64: eyJpZCI6Imd3XzA5MyIsIm5hbWUiOiLlpKnooZ3ohIfnq4vlhZwiLCJzbG90Ijoi5YWcIiwiY29uZGl0aW9uIjoiLSIsInRpZSI6IuW+s+W3neWutizotaTlgpnjgYgiLCJ0cmFpdE5hbWUiOiLls7vljrPlt6fnt7TihaBcbuaUu+WLh+Wil+mAsuKFoFxu6JCO57iu6L+95omT4oWgXG7miKbpgYXku5jooZTihaAiLCJ0cmFpdEVmZmVjdCI6IumDqOmaiuOBrumYsuW+oSs1JSjnuIHkuIDoh7TvvJrjgZXjgonjgavjgIHpg6jpmorjgYznmbrli5XjgZfjgabjgYTjgovjgIzls7vljrPjgI3jga7mioDog71MdisxKVxu6KOF552A5q2m5bCG44Go57mL44GM44Gj44Gf6YWN572u44Gu5q2m5bCG44Go5ZCM44GY57iB44GM5ZCI6KiIMuS7peS4iuOBruWgtOWQiOOAgemDqOmaiuOBruatpuWLhys1JSjnuIHkuIDoh7TvvJrjgZXjgonjgavmlLvmkoMrMTAlKVxu6KOF552A5q2m5bCG44GM5aSn5bCG44Gu5aC05ZCI44GL44CB5Ymv5bCG44Gn5aSn5bCG44Go5ZCM44GY57iB44GMMuS7peS4iuOBruWgtOWQiOOAgemAmuW4uOaUu+aSg+OBjOWRveS4reOBl+OBn+mDqOmaiuOBq+iQjue4ruOBjOS7mOS4juOBleOCjOOBpuOBhOOBquOBhOOBqOOBjeOAgTE1JSjnuIHkuIDoh7TvvJozMCUp44Gu56K6546H44Gn6JCO57iuKDEw56eSKeOCkuS7mOS4jlxu6YOo6ZqK44GM6Laz6Lu944GL6aiO6aas5YW156eR44Gn44CB6KOF552A5q2m5bCG44GM5aSn5bCG44Gu5aC05ZCI44GL44CB5Ymv5bCG44Gn5aSn5bCG44Go5ZCM44GY57iB44GMMuS7peS4iuOBruWgtOWQiOOAgeWHuumZo+W+jOOBruacgOWIneOBrumAmuW4uOaUu+aSg+OBjOWRveS4reOBl+OBn+aVtemDqOmaiuOBq+aIpuazlemAn+W6puS9juS4izUlKOe4geS4gOiHtO+8mjE1JSkoMTXnp5Ip44KS5LuY5LiOIiwic291cmNlIjoiR2FtZVdpdGgiLCJ1cGRhdGVkQXQiOiIyMDI2LTA5LTA4VDE2OjMwOjAwKzA5OjAwIiwidW5sb2NrQ29uZGl0aW9uIjoiLVxu6Y2b6Yys44Op44Oz44Kv4piFMVxu6Y2b6Yys44Op44Oz44Kv4piFNFxu6Y2b6Yys44Op44Oz44Kv4piFNyJ9
+        run: |
+          python - <<'PY'
+          import os,re,base64
+          from pathlib import Path
+          p=Path('index.html')
+          s=p.read_text()
+          new=base64.b64decode(os.environ['ITEM_B64']).decode()
+          pat=r'\{"id":"gw_093","name":"天衝脇立兜".*?\}'
+          s2,n=re.subn(pat,new,s,count=1)
+          if n != 1: raise SystemExit(f'entry replacement count={n}')
+          p.write_text(s2)
+          PY
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add index.html
+          git commit -m "Update current item DB" || exit 0
+          git push
