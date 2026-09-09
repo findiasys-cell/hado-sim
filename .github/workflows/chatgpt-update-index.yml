@@ -1,0 +1,146 @@
+name: ChatGPT update index
+
+on:
+  push:
+    paths:
+      - '.github/workflows/chatgpt-update-index.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  update-index:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Apply latest image export flow
+        shell: python
+        run: |
+          from pathlib import Path
+
+          p = Path('index.html')
+          s = p.read_text(encoding='utf-8')
+
+          css = '''
+          <style id="image-export-options-style">
+          .image-export-options{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:8px 0 12px;padding:10px;border:1px solid #314b60;border-radius:9px;background:#081725}
+          .image-export-options label{display:flex;align-items:center;gap:7px;min-height:36px;padding:6px 8px;border:1px solid #2e4658;border-radius:7px;background:#102536;color:#dce7ee;font-size:12px;font-weight:700}
+          .image-export-options input{width:18px;height:18px;accent-color:#b89a55}
+          .image-export-actions button{cursor:pointer}
+          @media(max-width:480px){.image-export-options{grid-template-columns:1fr}}
+          </style>
+          '''
+          if 'id="image-export-options-style"' not in s:
+              s = s.replace('</head>', css + '</head>', 1)
+
+          overlay_start = s.index('<div id="imageExportOverlay" aria-hidden="true">')
+          canvas_marker = '<canvas id="formationExportCanvas"></canvas>'
+          overlay_end = s.index(canvas_marker, overlay_start) + len(canvas_marker)
+          new_overlay = '''<div id="imageExportOverlay" aria-hidden="true">
+            <div class="image-export-card">
+              <div class="image-export-head"><b id="imageExportTitle">画像出力・項目選択</b><button type="button" id="closeImageExport" class="close">閉じる</button></div>
+              <div id="imageExportOptions" class="image-export-options">
+                <label><input type="checkbox" data-export-field="branch" checked> 兵科・編成人数</label>
+                <label><input type="checkbox" data-export-field="role" checked> 役割</label>
+                <label><input type="checkbox" data-export-field="general" checked> 武将名</label>
+                <label><input type="checkbox" data-export-field="tactic" checked> 戦法名</label>
+                <label><input type="checkbox" data-export-field="order" checked> 連鎖順</label>
+                <label><input type="checkbox" data-export-field="talent"> 天賦</label>
+                <label><input type="checkbox" data-export-field="aptitude" checked> 兵科適性</label>
+                <label><input type="checkbox" data-export-field="tacticEffects" checked> 戦法効果まとめ</label>
+              </div>
+              <div id="imageExportOptionActions" class="image-export-actions">
+                <button type="button" id="previewFormationImage">プレビュー</button>
+              </div>
+              <div id="imageExportPreviewArea" hidden>
+                <img id="imageExportPreview" class="image-export-preview" alt="編成画像プレビュー">
+                <div class="image-export-actions">
+                  <button type="button" id="backImageExportOptions">項目選択へ戻る</button>
+                  <a id="downloadFormationImage" download="信長覇道_編成.png">画像を保存</a>
+                </div>
+              </div>
+            </div>
+          </div>
+          <canvas id="formationExportCanvas"></canvas>'''
+          s = s[:overlay_start] + new_overlay + s[overlay_end:]
+
+          js_start = s.index('function generateFormationImage(){')
+          js_end = s.index("document.querySelectorAll('[data-battle-condition]')", js_start)
+          new_js = '''function getImageExportOptions(){
+            const out={};$$('#imageExportOptions [data-export-field]').forEach(c=>out[c.dataset.exportField]=c.checked);return out;
+          }
+          function generateFormationImage(opts=getImageExportOptions()){
+            const canvas=$('#formationExportCanvas'),ctx=canvas.getContext('2d'),width=1080,pad=54,rowH=118;
+            const selectedRows=roles.filter(r=>selected[r]),tacticRows=opts.tacticEffects?exportImageRoleOrder():[];
+            const headH=opts.branch?170:130;
+            const height=headH+80+selectedRows.length*rowH+(opts.tacticEffects?(120+tacticRows.reduce((s,o)=>s+150+Math.min(3,Math.ceil(String(o.x['戦法効果']||'').length/38))*28,0)):40);
+            canvas.width=width;canvas.height=Math.max(650,height);
+            ctx.fillStyle='#08131d';ctx.fillRect(0,0,canvas.width,canvas.height);
+            ctx.fillStyle='#e8cf87';ctx.font='bold 42px sans-serif';ctx.fillText(`信長の野望 覇道　編制${activeFormation+1}`,pad,68);
+            let top=112;
+            if(opts.branch){ctx.fillStyle='#9db2c2';ctx.font='26px sans-serif';ctx.fillText(`兵科：${equippedBranchName(branch,armor)}　編成人数：${selectedRows.length}/7`,pad,top);top+=28;}
+            ctx.strokeStyle='#385267';ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(pad,top+10);ctx.lineTo(width-pad,top+10);ctx.stroke();
+            ctx.fillStyle='#e8cf87';ctx.font='bold 30px sans-serif';ctx.fillText('編成',pad,top+60);
+            let y=top+90;
+            selectedRows.forEach(role=>{
+              const x=selected[role];ctx.fillStyle='#102536';ctx.fillRect(pad,y,width-pad*2,rowH-12);
+              let left=pad+18;
+              if(opts.role){ctx.fillStyle='#90aabd';ctx.font='bold 23px sans-serif';ctx.fillText(role,left,y+35);left=pad+155;}
+              if(opts.general){ctx.fillStyle='#fff';ctx.font='bold 30px sans-serif';ctx.fillText(x['武将名'],left,y+38);}
+              const bits=[];
+              if(opts.tactic)bits.push(x['戦法名']||'戦法名なし');
+              if(opts.order)bits.push(`連鎖順 ${x['連鎖順']||'普通'}`);
+              if(bits.length){ctx.fillStyle='#d7c17e';ctx.font='22px sans-serif';ctx.fillText(bits.join('　／　'),left,y+76);}
+              const meta=[];if(opts.talent)meta.push(`天賦 ${x['天賦']||'―'}`);if(opts.aptitude)meta.push(`${branch}適性 ${x[branch]||'―'}`);
+              if(meta.length){ctx.fillStyle='#a9bdcb';ctx.font='22px sans-serif';ctx.textAlign='right';ctx.fillText(meta.join('　'),width-pad-18,y+76);ctx.textAlign='left';}
+              y+=rowH;
+            });
+            if(opts.tacticEffects){
+              y+=30;ctx.fillStyle='#e8cf87';ctx.font='bold 30px sans-serif';ctx.fillText('戦法効果まとめ',pad,y);y+=45;
+              tacticRows.forEach((o,i)=>{
+                const x=o.x,effect=String(x['戦法効果']||'戦法効果未登録');ctx.fillStyle='#102536';ctx.fillRect(pad,y,width-pad*2,142+Math.min(3,Math.ceil(effect.length/38))*28);
+                ctx.fillStyle='#e8cf87';ctx.font='bold 25px sans-serif';const h=[];if(opts.role)h.push(o.role);if(opts.tactic)h.push(x['戦法名']||'戦法名なし');ctx.fillText(`${i+1}. ${h.join('　')}`,pad+18,y+38);
+                const m=[];if(opts.general)m.push(x['武将名']);if(opts.order)m.push(`［${x['連鎖順']||'普通'}］`);if(m.length){ctx.fillStyle='#fff';ctx.font='22px sans-serif';ctx.fillText(m.join('　'),pad+18,y+72);}
+                ctx.fillStyle='#c4d2dc';ctx.font='21px sans-serif';const end=drawWrappedText(ctx,effect,pad+18,y+108,width-pad*2-36,28,4);y=Math.max(y+170,end+26);
+              });
+            }
+            return canvas.toDataURL('image/png');
+          }
+          function showImageExportOptions(){
+            $('#imageExportTitle').textContent='画像出力・項目選択';$('#imageExportOptions').hidden=false;$('#imageExportOptionActions').hidden=false;$('#imageExportPreviewArea').hidden=true;
+          }
+          function openFormationImageExport(){
+            showImageExportOptions();$('#imageExportOverlay').classList.add('open');$('#imageExportOverlay').setAttribute('aria-hidden','false');syncOverlayDeleteLock();
+          }
+          function previewFormationImage(){
+            try{
+              const opts=getImageExportOptions();
+              if(!Object.values(opts).some(Boolean)){alert('出力する項目を1つ以上選択してください。');return;}
+              const url=generateFormationImage(opts);$('#imageExportPreview').src=url;
+              const d=new Date(),p=n=>String(n).padStart(2,'0');$('#downloadFormationImage').download=`信長覇道_編制${activeFormation+1}_${d.getFullYear()}${p(d.getMonth()+1)}${p(d.getDate())}_${p(d.getHours())}${p(d.getMinutes())}.png`;$('#downloadFormationImage').href=url;
+              $('#imageExportTitle').textContent='画像出力・プレビュー';$('#imageExportOptions').hidden=true;$('#imageExportOptionActions').hidden=true;$('#imageExportPreviewArea').hidden=false;
+            }catch(e){alert('画像の作成に失敗しました。');}
+          }
+          function closeFormationImageExport(){$('#imageExportOverlay').classList.remove('open');$('#imageExportOverlay').setAttribute('aria-hidden','true');syncOverlayDeleteLock();}
+          $('#exportFormationImage')?.addEventListener('click',openFormationImageExport);
+          $('#previewFormationImage')?.addEventListener('click',previewFormationImage);
+          $('#backImageExportOptions')?.addEventListener('click',showImageExportOptions);
+          $('#closeImageExport')?.addEventListener('click',closeFormationImageExport);
+          $('#imageExportOverlay')?.addEventListener('click',e=>{if(e.target===$('#imageExportOverlay'))closeFormationImageExport();});
+
+          '''
+          s = s[:js_start] + new_js + s[js_end:]
+          p.write_text(s, encoding='utf-8')
+
+      - name: Commit index update
+        run: |
+          git config user.name "ChatGPT"
+          git config user.email "actions@users.noreply.github.com"
+          git add index.html
+          if git diff --cached --quiet; then
+            echo "No index changes needed"
+          else
+            git commit -m "Update image export selection and preview flow"
+            git push
+          fi
