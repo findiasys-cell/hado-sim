@@ -433,13 +433,17 @@ body.ui-overlay-open .flag-slot .clear{
 
 
 <style id="battle-condition-style">
-.battle-condition-box{margin:0 0 12px;padding:11px;border:1px solid #36536d;border-radius:10px;background:#0a1a28}
-.battle-condition-title{font-weight:900;color:#e5c879;margin-bottom:8px}.battle-condition-title small{font-size:10px;color:#91a9bc;margin-left:6px}
+.ability-collapse{margin:0 0 10px;border:1px solid #36536d;border-radius:10px;background:#0a1a28;overflow:hidden}
+.ability-collapse-toggle{width:100%;display:flex;align-items:center;justify-content:space-between;gap:10px;border:0;background:linear-gradient(#122b40,#0c1d2d);color:#e5c879;padding:10px 11px;font-weight:900;text-align:left;cursor:pointer}
+.ability-collapse-toggle .collapse-main{display:flex;align-items:center;gap:7px;min-width:0}.ability-collapse-toggle small{font-size:10px;color:#91a9bc;font-weight:700}.ability-collapse-toggle .collapse-status{flex:0 0 auto;color:#b9cbd8;font-size:10px;font-weight:800}
+.ability-collapse-toggle .collapse-arrow{display:inline-block;transition:transform .18s ease;font-size:12px}.ability-collapse.open .collapse-arrow{transform:rotate(180deg)}
+.ability-collapse-body{display:none;padding:11px}.ability-collapse.open .ability-collapse-body{display:block}
 .battle-condition-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px}
 .battle-condition-grid label{display:flex;align-items:center;gap:7px;min-height:36px;padding:6px 8px;border:1px solid #29445d;border-radius:7px;background:#102438;color:#dbe7f1;font-size:12px;font-weight:700}
 .battle-condition-grid input{width:18px;height:18px;flex:0 0 18px;accent-color:#c69a45}
 .battle-condition-note{margin-top:8px;color:#8fa6bb;font-size:10px;line-height:1.5}
-@media(max-width:560px){.battle-condition-grid{grid-template-columns:1fr}.battle-condition-grid label{min-height:34px}}
+#abilityAdjustments{padding:0}
+@media(max-width:560px){.battle-condition-grid{grid-template-columns:1fr}.battle-condition-grid label{min-height:34px}.ability-collapse-toggle{padding:9px 10px}}
 </style>
 
 
@@ -600,21 +604,32 @@ body.ui-overlay-open .flag-slot .clear{
   <div id="tacticEffectSummary"><span class="placeholder">武将を編成すると戦法効果をまとめて表示します</span></div>
 </div></div>
   <div id="abilityPanel" class="section tab-panel"><h2>能力補正</h2>
-<div class="battle-condition-box">
-  <div class="battle-condition-title">技能条件の設定 <small>実戦状況をON/OFF</small></div>
-  <div class="battle-condition-grid">
-    <label><input type="checkbox" data-battle-condition="hp50plus"> 兵力50%以上</label>
-    <label><input type="checkbox" data-battle-condition="hp50minus"> 兵力50%以下</label>
-    <label><input type="checkbox" data-battle-condition="ownTerritory"> 自大名家の領土内</label>
-    <label><input type="checkbox" data-battle-condition="enemyTerritory"> 敵大名家の領土内</label>
-    <label><input type="checkbox" data-battle-condition="ownSiege"> 自大名家所有の城・砦・港の攻城戦</label>
-    <label><input type="checkbox" data-battle-condition="enemySiege"> 敵大名家所有の城・砦・港の攻城戦</label>
-    <label><input type="checkbox" data-battle-condition="sea"> 海上</label>
-    <label><input type="checkbox" data-battle-condition="ambush"> 待伏命令時</label>
+<div id="battleConditionCollapse" class="ability-collapse">
+  <button type="button" class="ability-collapse-toggle" data-collapse-target="battleConditionCollapse" aria-expanded="false">
+    <span class="collapse-main"><span>技能条件の設定</span><small>実戦状況をON/OFF</small></span>
+    <span class="collapse-status"><span id="battleConditionActiveCount">0件ON</span> <span class="collapse-arrow">▼</span></span>
+  </button>
+  <div class="ability-collapse-body">
+    <div class="battle-condition-grid">
+      <label><input type="checkbox" data-battle-condition="hp50plus"> 兵力50%以上</label>
+      <label><input type="checkbox" data-battle-condition="hp50minus"> 兵力50%以下</label>
+      <label><input type="checkbox" data-battle-condition="ownTerritory"> 自大名家の領土内</label>
+      <label><input type="checkbox" data-battle-condition="enemyTerritory"> 敵大名家の領土内</label>
+      <label><input type="checkbox" data-battle-condition="ownSiege"> 自大名家所有の城・砦・港の攻城戦</label>
+      <label><input type="checkbox" data-battle-condition="enemySiege"> 敵大名家所有の城・砦・港の攻城戦</label>
+      <label><input type="checkbox" data-battle-condition="sea"> 海上</label>
+      <label><input type="checkbox" data-battle-condition="ambush"> 待伏命令時</label>
+    </div>
+    <div class="battle-condition-note">ONにした条件を、能力補正での技能発動判定に使用します。条件と技能の対応は登録済みのものから反映します。</div>
   </div>
-  <div class="battle-condition-note">ONにした条件を、能力補正での技能発動判定に使用します。条件と技能の対応は登録済みのものから反映します。</div>
 </div>
-<div id="abilityAdjustments"><span class="placeholder">能力補正の集計表示は今後この欄に反映します</span></div></div>
+<div id="abilityResultCollapse" class="ability-collapse">
+  <button type="button" class="ability-collapse-toggle" data-collapse-target="abilityResultCollapse" aria-expanded="false">
+    <span class="collapse-main"><span>能力補正の表示</span><small>集計結果</small></span>
+    <span class="collapse-status"><span>開く</span> <span class="collapse-arrow">▼</span></span>
+  </button>
+  <div class="ability-collapse-body"><div id="abilityAdjustments"><span class="placeholder">能力補正の集計表示は今後この欄に反映します</span></div></div>
+</div></div>
   <div id="detailsPanel" class="section tab-panel"><h2>武将別データ</h2><div id="details" class="detail-list"><span class="placeholder">各枠をタップして武将を選択してください</span></div></div>
   <div id="itemDbPanel" class="section tab-panel">
     <h2>逸品DB</h2>
@@ -1981,6 +1996,23 @@ $$('.section-tab').forEach(btn=>btn.addEventListener('click',()=>{
   $$('.tab-panel').forEach(p=>p.classList.toggle('active',p.id===btn.dataset.panel));
 }));
 
+function updateAbilityCollapseStatus(){
+  const count=Object.values(battleConditions||{}).filter(Boolean).length;
+  const countEl=$('#battleConditionActiveCount');if(countEl)countEl.textContent=`${count}件ON`;
+  $$('.ability-collapse').forEach(box=>{
+    const btn=box.querySelector('.ability-collapse-toggle');
+    if(!btn)return;
+    btn.setAttribute('aria-expanded',box.classList.contains('open')?'true':'false');
+    if(box.id==='abilityResultCollapse'){
+      const status=btn.querySelector('.collapse-status > span:first-child');if(status)status.textContent=box.classList.contains('open')?'閉じる':'開く';
+    }
+  });
+}
+$$('.ability-collapse-toggle').forEach(btn=>btn.addEventListener('click',()=>{
+  const box=document.getElementById(btn.dataset.collapseTarget);if(!box)return;box.classList.toggle('open');updateAbilityCollapseStatus();
+}));
+updateAbilityCollapseStatus();
+
 document.querySelectorAll('[data-battle-condition]').forEach(c=>c.addEventListener('change',()=>{
   const key=c.dataset.battleCondition;
   // 相反条件は同時ONにしない
@@ -1998,6 +2030,7 @@ document.querySelectorAll('[data-battle-condition]').forEach(c=>c.addEventListen
   }
   formationStates[activeFormation].battleConditions=battleConditions;
   renderBattleConditionControls();
+  updateAbilityCollapseStatus();
   renderSummary();
 }));
 
