@@ -669,6 +669,7 @@ body.ui-overlay-open .flag-slot .clear{
       <label><input type="checkbox" data-export-field="order" checked> 連鎖順</label>
       <label><input type="checkbox" data-export-field="talent"> 天賦</label>
       <label><input type="checkbox" data-export-field="aptitude" checked> 兵科適性</label>
+      <label><input type="checkbox" data-export-field="skills" checked> 発動技能</label>
       <label><input type="checkbox" data-export-field="tacticEffects" checked> 戦法効果まとめ</label>
     </div>
     <div id="imageExportOptionActions" class="image-export-actions">
@@ -1301,11 +1302,22 @@ function drawWrappedText(ctx,text,x,y,maxWidth,lineHeight,maxLines=99){
 function getImageExportOptions(){
   const out={};$$('#imageExportOptions [data-export-field]').forEach(c=>out[c.dataset.exportField]=c.checked);return out;
 }
+function exportActiveSkillLabels(){
+  const counts=regularSkillCounts();
+  return [...counts.keys()]
+    .filter(name=>skillIsActive(name)&&battleConditionSatisfied(name))
+    .map(name=>skillLevelLabel(name,effectiveSkillCount(name)))
+    .sort((a,b)=>a.localeCompare(b,'ja'));
+}
 function generateFormationImage(opts=getImageExportOptions()){
   const canvas=$('#formationExportCanvas'),ctx=canvas.getContext('2d'),width=1080,pad=54,rowH=118;
   const selectedRows=roles.filter(r=>selected[r]),tacticRows=opts.tacticEffects?exportImageRoleOrder():[];
+  const activeSkills=opts.skills?exportActiveSkillLabels():[];
+  const activeSkillText=activeSkills.length?activeSkills.join('　'):'なし';
+  const activeSkillLines=opts.skills?Math.max(1,Math.min(8,Math.ceil(activeSkillText.length/34))):0;
   const headH=opts.branch?170:130;
-  const height=headH+80+selectedRows.length*rowH+(opts.tacticEffects?(120+tacticRows.reduce((s,o)=>s+150+Math.min(3,Math.ceil(String(o.x['戦法効果']||'').length/38))*28,0)):40);
+  const skillH=opts.skills?(88+activeSkillLines*30):0;
+  const height=headH+80+selectedRows.length*rowH+skillH+(opts.tacticEffects?(120+tacticRows.reduce((s,o)=>s+150+Math.min(3,Math.ceil(String(o.x['戦法効果']||'').length/38))*28,0)):40);
   canvas.width=width;canvas.height=Math.max(650,height);
   ctx.fillStyle='#08131d';ctx.fillRect(0,0,canvas.width,canvas.height);
   ctx.fillStyle='#e8cf87';ctx.font='bold 42px sans-serif';ctx.fillText(`信長の野望 覇道　編制${activeFormation+1}`,pad,68);
@@ -1327,6 +1339,14 @@ function generateFormationImage(opts=getImageExportOptions()){
     if(meta.length){ctx.fillStyle='#a9bdcb';ctx.font='22px sans-serif';ctx.textAlign='right';ctx.fillText(meta.join('　'),width-pad-18,y+76);ctx.textAlign='left';}
     y+=rowH;
   });
+  if(opts.skills){
+    y+=24;
+    ctx.fillStyle='#e8cf87';ctx.font='bold 30px sans-serif';ctx.fillText('発動技能',pad,y);y+=42;
+    ctx.fillStyle='#102536';ctx.fillRect(pad,y,width-pad*2,26+activeSkillLines*30);
+    ctx.fillStyle='#dbe7ef';ctx.font='22px sans-serif';
+    const skillEnd=drawWrappedText(ctx,activeSkillText,pad+18,y+34,width-pad*2-36,30,8);
+    y=Math.max(y+52+activeSkillLines*30,skillEnd+20);
+  }
   if(opts.tacticEffects){
     y+=30;ctx.fillStyle='#e8cf87';ctx.font='bold 30px sans-serif';ctx.fillText('戦法効果まとめ',pad,y);y+=45;
     tacticRows.forEach((o,i)=>{
