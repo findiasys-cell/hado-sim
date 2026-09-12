@@ -1,0 +1,59 @@
+name: ChatGPT update tactic support labels
+on: push
+permissions:
+  contents: write
+jobs:
+  patch:
+    if: github.event.head_commit.message == 'Add temporary workflow for tactic support labels'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Update support tactic labels
+        run: |
+          python - <<'PY'
+          import re
+          from pathlib import Path
+          p=Path('index.html')
+          s=p.read_text()
+          pos=max(s.find("'知破'"),s.find('"知破"'))
+          if pos < 0: raise SystemExit('tactic attribute marker not found')
+          starts=list(re.finditer(r'function\s+([A-Za-z0-9_$]+)\s*\(([^)]*)\)\s*\{',s[:pos]))
+          if not starts: raise SystemExit('function start not found')
+          m=starts[-1]
+          start=m.start(); i=m.end(); depth=1
+          in_s=in_d=in_t=False; esc=False
+          while i < len(s) and depth:
+            c=s[i]
+            if esc: esc=False
+            elif c=='\\': esc=True
+            elif in_s:
+              if c=="'": in_s=False
+            elif in_d:
+              if c=='"': in_d=False
+            elif in_t:
+              if c=='`': in_t=False
+            else:
+              if c=="'": in_s=True
+              elif c=='"': in_d=True
+              elif c=='`': in_t=True
+              elif c=='{': depth+=1
+              elif c=='}': depth-=1
+            i+=1
+          block=s[start:i]
+          params=[x.strip() for x in m.group(2).split(',') if x.strip()]
+          if not params: raise SystemExit('function parameter not found')
+          param=params[0]
+          pat=r"return\s+(['\"])なし\1\s*;"
+          repl=f"return /回復/.test(String({param}||''))?'回復':'補助';"
+          newblock,n=re.subn(pat,repl,block,count=1)
+          if n != 1: raise SystemExit('default none return not found in tactic attribute function')
+          p.write_text(s[:start]+newblock+s[i:])
+          PY
+          node - <<'JS'
+          const fs=require('fs');const s=fs.readFileSync('index.html','utf8');const blocks=[...s.matchAll(/<script(?:\s[^>]*)?>([\s\S]*?)<\/script>/gi)];for(const b of blocks){new Function(b[1]);}console.log('JavaScript syntax OK');
+          JS
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add index.html
+          git commit -m "Classify non-damage tactics as healing or support"
+          git push
