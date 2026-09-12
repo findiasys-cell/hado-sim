@@ -1,0 +1,62 @@
+name: ChatGPT add tactic attributes
+on: push
+permissions:
+  contents: write
+jobs:
+  patch:
+    if: github.event.head_commit.message == 'Add temporary workflow for tactic attributes'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Add tactic attributes
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import re, json
+          p=Path('index.html')
+          s=p.read_text(encoding='utf-8')
+          m=re.search(r'const DB = (\[.*?\]);\nconst ', s, re.S)
+          if not m:
+              raise SystemExit('DB not found')
+          db=json.loads(m.group(1))
+          def attr(desc):
+              d=(desc or '').replace('％','%')
+              found=[]
+              if re.search(r'(?:武勇\s*(?:/|・|、|または|と)\s*知略|知略\s*(?:/|・|、|または|と)\s*武勇).{0,30}(?:高い方|高いほう|高い系統|高い側)', d):
+                  found += ['武','知']
+              for key,label in [('武勇','武'),('知略','知'),('破壊','破')]:
+                  if re.search(fr'{key}\s*\d+(?:\.\d+)?\s*%(?:\s*の)?\s*攻撃', d):
+                      found.append(label)
+              order={'武':0,'知':1,'破':2}
+              key=''.join(sorted(set(found), key=lambda x:order[x]))
+              return {'武':'武勇','知':'知略','破':'破壊','武知':'武知','武破':'武破','知破':'知破','武知破':'武知破','':'なし'}[key]
+          for x in db:
+              x['戦法属性']=attr(x.get('戦法効果',''))
+          new=json.dumps(db,ensure_ascii=False,separators=(',',':'))
+          s=s[:m.start(1)] + new + s[m.end(1):]
+          old='<div class="row"><span class="label">戦法効果:</span> ${clean(x[\'戦法効果\'])}</div><div class="row"><span class="label">発動間隔:</span> ${clean(x[\'発動間隔\'])}'
+          newrow='<div class="row"><span class="label">戦法効果:</span> ${clean(x[\'戦法効果\'])}</div><div class="row"><span class="label">戦法属性:</span> ${clean(x[\'戦法属性\'])}</div><div class="row"><span class="label">発動間隔:</span> ${clean(x[\'発動間隔\'])}'
+          n=s.count(old)
+          if n < 1:
+              raise SystemExit('detail target not found')
+          s=s.replace(old,newrow)
+          p.write_text(s,encoding='utf-8')
+          counts={}
+          for x in db: counts[x['戦法属性']]=counts.get(x['戦法属性'],0)+1
+          print('counts',counts)
+          print('UR Nobunaga',next(x['戦法属性'] for x in db if x['武将名']=='織田信長(UR)'))
+          PY
+          python - <<'PY'
+          from pathlib import Path
+          import re
+          s=Path('index.html').read_text(encoding='utf-8')
+          scripts=re.findall(r'<script(?:[^>]*)>(.*?)</script>',s,re.S|re.I)
+          if len(scripts)!=1: raise SystemExit(f'unexpected scripts={len(scripts)}')
+          Path('/tmp/index-script.js').write_text(scripts[0],encoding='utf-8')
+          PY
+          node --check /tmp/index-script.js
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add index.html
+          git commit -m "Add tactic attributes from tactic descriptions"
+          git push
