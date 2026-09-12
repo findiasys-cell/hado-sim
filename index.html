@@ -772,7 +772,7 @@ const gradeRank={S:5,A:4,B:3,C:2,D:1};
 const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
 function clean(v){return v===null||v===undefined||v===""?"未登録":v}
 function escapeHtml(v){return String(v).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','\"':'&quot;',"'":'&#39;'}[c]))}
-function renderDBNote(){const ur=DB.filter(x=>x['レアリティ']==='UR').length;const ssr=DB.filter(x=>x['レアリティ']==='SSR').length;$('#dbNote').innerHTML=`DB登録 ${DB.length}名（UR ${ur}名 / SSR ${ssr}名）<br>6編制をタブ切替`;}
+function renderDBNote(){const ur=DB.filter(x=>x['レアリティ']==='UR').length;const ssr=DB.filter(x=>x['レアリティ']==='SSR').length;const itemCount=Array.isArray(ITEM_DB_DEFAULTS)?ITEM_DB_DEFAULTS.length:0;$('#dbNote').innerHTML=`武将DB ${DB.length}名（UR ${ur}名 / SSR ${ssr}名）<br>逸品DB ${itemCount}件<br>6編制をタブ切替`; }
 function generalIdentityKey(name){
   return String(name||'').normalize('NFKC').replace(/\s+/g,'').replace(/^(?:UR|SSR|SR|R)[・:_\-]*/i,'').replace(/[（(][^）)]*[）)]$/,'').trim();
 }
