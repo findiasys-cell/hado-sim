@@ -7,7 +7,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Compare DB hashes
+      - name: Verify synced DB
         run: |
           python - <<'PY'
           import re,json,hashlib
@@ -15,7 +15,7 @@ jobs:
           def extract(name):
             m=re.search(r'const\s+'+re.escape(name)+r'\s*=\s*',s)
             if not m: raise RuntimeError('marker '+name)
-            i=m.end(); start=i; depth=0; ins=False; esc=False
+            start=m.end(); depth=0; ins=False; esc=False
             for j in range(start,len(s)):
               c=s[j]
               if ins:
@@ -29,13 +29,18 @@ jobs:
                   depth-=1
                   if depth==0: return json.loads(s[start:j+1])
             raise RuntimeError(name)
-          db=extract('DB')
-          items=extract('ITEM_DB_DEFAULTS')
+          db=extract('DB'); items=extract('ITEM_DB_DEFAULTS')
           db2=[{k:v for k,v in x.items() if k!='戦法属性'} for x in db]
           h=lambda x:hashlib.sha256(json.dumps(x,ensure_ascii=False,sort_keys=True,separators=(',',':')).encode()).hexdigest()
-          print('DB_COUNT',len(db))
-          print('DB_HASH_NO_ATTR',h(db2))
-          print('ITEM_COUNT',len(items))
-          print('ITEM_HASH',h(items))
+          dbhash=h(db2); itemhash=h(items)
+          print('DB_COUNT',len(db)); print('DB_HASH_NO_ATTR',dbhash)
+          print('ITEM_COUNT',len(items)); print('ITEM_HASH',itemhash)
           print('ITEM_WITH_EFFECT',sum(bool(x.get('traitEffect')) for x in items))
+          assert dbhash=='21f0e803fe30d1b8aacf4f51fcf04156750eb5e088f81a134c180dbffca12bb1'
+          assert itemhash=='8159dae5bd001c6c1dbfebdb2ed567e30484229ba4041033e16c0a737235c43a'
+          assert len(db)==273 and len(items)==93
+          assert sum(bool(x.get('traitEffect')) for x in items)==26
           PY
+          node - <<'JS'
+          const fs=require('fs');const s=fs.readFileSync('index.html','utf8');for(const b of s.matchAll(/<script(?:\s[^>]*)?>([\s\S]*?)<\/script>/gi)){new Function(b[1]);}console.log('JavaScript syntax OK');
+          JS
