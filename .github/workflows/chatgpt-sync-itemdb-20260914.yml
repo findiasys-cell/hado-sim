@@ -1,0 +1,54 @@
+name: ChatGPT sync latest item DB
+on: push
+permissions:
+  contents: write
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Sync latest item DB
+        run: |
+          python - <<'PY'
+          import re,json
+          from pathlib import Path
+          updates=json.loads(r'''[{"id":"gw_003","name":"物吉貞宗","slot":"刀","condition":"-","tie":"囲碁,徳川家","traitName":"徳川団結1\n消無展開\n泰然展開\n徳川団結2","traitEffect":"自身と繋がった配置の武将との戦法連鎖率+1%(縁一致:さらに「徳川家」の縁を持つ武将間での戦法連鎖率+3%)\n装備武将が大将の場合、交戦開始時に自身に強化打消無効が付与されていない場合に1度だけ、自身1部隊に1回の強化打消無効(10秒)(縁一致:25秒)を付与\n装備武将が大将の場合、交戦開始時に自身に泰然が付与されていない場合に1度だけ、自身1部隊に1回の泰然(10秒)(縁一致:25秒)を付与\n自身と繋がった配置の武将との戦法連鎖率+2%(縁一致:さらに「徳川家」の縁を持つ武将間での戦法連鎖率+6%)","source":"GameWith","updatedAt":"2026-09-14T09:49:00+09:00","unlockCondition":"-\n鍛錬ランク★1\n鍛錬ランク★4\n鍛錬ランク★7"},{"id":"gw_018","name":"蝮の懐剣","slot":"刀","condition":"-","tie":"斎藤家,女丈夫","traitName":"病毒付術1\n知略盛強\n敵陣盤石\n病毒付術2","traitEffect":"交戦開始時に攻撃目標の部隊に病毒が付与されていない場合、対象の敵1部隊に病毒1%を付与(15秒)(縁一致:30秒)\n装着武将の戦法による知略上昇の効果+10%(縁一致:30％)\n敵大名家の領土内で戦闘する場合、部隊の被ダメージ‐5%(縁一致:15％)\n交戦開始時に攻撃目標の部隊に病毒が付与されていない場合、対象の敵1部隊に病毒2%を付与(15秒)(縁一致:30秒)","source":"GameWith","updatedAt":"2026-09-14T09:49:00+09:00","unlockCondition":"-\n鍛錬ランク★1\n鍛錬ランク★4\n鍛錬ランク★7"},{"id":"gw_019","name":"愛山護法","slot":"武具","condition":"鉄砲適性A","tie":"雑賀本願寺,講談","traitName":"堅固始動Ⅰ\n攻防低録Ⅰ\n拘束追打Ⅰ\n攻防低録Ⅱ","traitEffect":"装着武将が大将の場合、交戦開始時に自身に堅固が付与されていない場合に1度だけ、自身に堅固5%(10秒)を付与(縁一致:10%)\n装着武将が大将の場合、装着武将の戦法に「対象を含む敵3部隊の攻撃、防御5%(縁一致:15%)低下(15秒)」を追加\n装着武将が大将で、通常攻撃が命中した部隊に拘束が付与されていない場合、30%(縁一致:60%)の確率で拘束(3秒)を付与\n装着武将が大将の場合、装着武将の戦法に「対象を含む敵3部隊の攻撃、防御10%(縁一致:30%)低下(15秒)」を追加","source":"GameWith","updatedAt":"2026-09-14T09:49:00+09:00","unlockCondition":"-\n鍛錬ランク★1\n鍛錬ランク★4\n鍛錬ランク★7"},{"id":"gw_020","name":"紅糸中白威胴丸","slot":"鎧","condition":"-","tie":"斎藤家,下剋上","traitName":"槍恐拡録1\n知低拡録\n知昇追録\n槍恐拡録2","traitEffect":"装着武将が足軽兵科の場合、装着武将の戦法に「対象を含む敵3部隊に恐慌1%を付与(15秒)」を追加(縁一致:30秒)\n装着武将が大将の場合、装着武将の戦法に「対象を含む敵3部隊の知略10%(縁一致:20%)低下(15秒)」を追加\n装着武将が大将の場合、装着武将の戦法に「自身1部隊の知略10%(縁一致:30%)上昇(15秒)」を追加\n装着武将が足軽兵科の場合、装着武将の戦法に「対象を含む敵3部隊に恐慌2%を付与(15秒)」を追加(縁一致:30秒)","source":"GameWith","updatedAt":"2026-09-14T09:49:00+09:00","unlockCondition":"-\n鍛錬ランク★1\n鍛錬ランク★4\n鍛錬ランク★7"},{"id":"gw_021","name":"如意宝輪","slot":"武具","condition":"-","tie":"無双,女丈夫","traitName":"防勇助進\n昵懇運針\n攻撃佑援","traitEffect":"装着武将が副将か与力の場合、部隊の防御+3%(縁一致:さらに武勇+3%)\n装着武将が副将か与力の場合、部隊内で繋がった配置の武将との戦法連鎖率+2%(縁一致:4%)\n装着武将が副将か与力の場合、大将の戦法発動時、部隊の攻撃+10%(縁一致:20%)(15秒)","source":"GameWith","updatedAt":"2026-09-14T09:53:47+09:00","unlockCondition":"鍛錬ランク★1\n鍛錬ランク★2\n鍛錬ランク★4"},{"id":"gw_022","name":"炎槍素戔嗚","slot":"武具","condition":"-","tie":"無双,赤備え","traitName":"機動出陣\n連結盛強\n背水避捷","traitEffect":"装着武将が大将の場合、出陣時に自身1部隊に機動+10%(縁一致:20%)上昇(30秒)を付与\n装着武将が大将の場合、大将の戦法による戦法速度上昇、結束の効果+5%(縁一致:10%)\n装着武将が大将の場合、出陣中に初めて兵力が30%以下になったとき、自身1部隊に通常攻撃回避100%を付与(5秒)(縁一致:10秒)","source":"GameWith","updatedAt":"2026-09-14T09:53:47+09:00","unlockCondition":"鍛錬ランク★1\n鍛錬ランク★2\n鍛錬ランク★4"},{"id":"gw_023","name":"霊剣布都御魂","slot":"刀","condition":"-","tie":"無双,下剋上","traitName":"勇進鋭練\n速揚盛強\n会威拡録","traitEffect":"部隊の武勇+5%(縁一致:さらに部隊の「鋭鋒」の技能Lv+1)\n装着武将が大将の場合、大将の戦法による攻撃速度上昇、高揚の効果+5%(縁一致:10%)\n装着武将が大将の場合、装着武将の戦法に「自身と一門衆を含む味方2部隊の会心威力10%(縁一致:20%)上昇(15秒)」を追加","source":"GameWith","updatedAt":"2026-09-14T09:53:47+09:00","unlockCondition":"鍛錬ランク★1\n鍛錬ランク★2\n鍛錬ランク★4"},{"id":"gw_024","name":"天雷召輪","slot":"武具","condition":"-","tie":"無双,律義者","traitName":"戦威迎撃\n防進心練\n背水速利","traitEffect":"部隊が遊撃、待伏中に戦法で与えるダメージ+10%(縁一致:20%)\n部隊の防御+5%(縁一致:さらに部隊の「一心」の技能Lv+1)\n装着武将が副将か与力の場合、兵力が30%以下の時、部隊の戦法速度+5%(縁一致:15%)","source":"GameWith","updatedAt":"2026-09-14T09:53:47+09:00","unlockCondition":"鍛錬ランク★1\n鍛錬ランク★2\n鍛錬ランク★4"},{"id":"gw_025","name":"弘行琳雅","slot":"刀","condition":"-","tie":"徳川家,治水名人,虎","traitName":"高揚展開\n破壊助進\n攻撃迫撃","traitEffect":"装着武将が大将の場合、交戦開始時に自身に高揚が付与されていない場合に1度だけ、自身1部隊に高揚15%(縁一致：30%)(15秒)を付与\n部隊の破壊+4%(縁一致：8%)\n部隊が攻撃命令中か制圧中に、与えるダメージ+5%(縁一致：10%)","source":"GameWith","updatedAt":"2026-09-14T09:56:03+09:00","unlockCondition":"鍛錬ランク★1\n鍛錬ランク★2\n鍛錬ランク★4"},{"id":"gw_026","name":"烏天狗図金象嵌","slot":"武具","condition":"鉄砲適性A","tie":"築城名人,武辺者,射撃名人","traitName":"防昇展開\n領内機訓\n防衛迫撃","traitEffect":"装着武将が大将の場合、交戦開始時に自身に防御上昇が付与されていない場合に1度だけ、自身1部隊に防御15%(縁一致：30%)上昇(15秒)を付与\n装着武将が大将の場合、自大名家領土内での部隊の機動+5%(縁一致：敵部隊撃破時に編制した部隊が獲得できる武将の経験値+5%)\n部隊が遊撃、待伏中に、与えるダメージ+5%(縁一致：10%)","source":"GameWith","updatedAt":"2026-09-14T09:56:03+09:00","unlockCondition":"鍛錬ランク★1\n鍛錬ランク★2\n鍛錬ランク★4"},{"id":"gw_027","name":"銀白檀塗合子形兜","slot":"兜","condition":"-","tie":"黒田家,築城名人","traitName":"看破巧練Ⅰ\n攻知低録Ⅰ\n動同薄能Ⅰ\n攻知低録Ⅱ","traitEffect":"部隊の破壊+5%(縁一致：さらに、部隊の「看破」の技能Lv+1)\n装着武将が大将の場合か、副将で大将と同じ縁が2以上の場合、装着武将の戦法に「対象を含む敵3部隊の攻撃、知略を5%(縁一致：15%)低下(15秒)」を追加\n装着武将が大将の場合か、副将で大将と同じ縁が2以上の場合、編制された部隊にかかる「動揺」「同討」の効果時間-20%(縁一致：50%)\n装着武将が大将の場合か、副将で大将と同じ縁が2以上の場合、装着武将の戦法に「対象を含む敵3部隊の攻撃、知略を10%(縁一致：30%)低下(15秒)」を追加","source":"GameWith","updatedAt":"2026-09-14T09:56:03+09:00","unlockCondition":"-\n鍛錬ランク★1\n鍛錬ランク★2\n鍛錬ランク★4"},{"id":"gw_028","name":"魚鱗札二枚胴","slot":"鎧","condition":"-","tie":"縦横家,牢人","traitName":"迅速巧練Ⅰ\n知破昇録Ⅰ\n動怖薄能Ⅰ\n知破昇録Ⅱ","traitEffect":"部隊の機動+5%(縁一致：さらに、部隊の「迅速」の技能Lv+1)\n装着武将が大将の場合か、副将で大将と同じ縁が2以上の場合、装着武将の戦法に「自身と一門衆を含む味方3部隊の知略、破壊を5%(縁一致：15%)上昇(15秒)」を追加\n装着武将が大将の場合か、副将で大将と同じ縁が2以上の場合、編制された部隊にかかる「動揺」「恐怖」の効果時間-20%(縁一致：50%)\n装着武将が大将の場合か、副将で大将と同じ縁が2以上の場合、装着武将の戦法に「自身と一門衆を含む味方3部隊の知略、破壊を10%(縁一致：30%)上昇(15秒)」を追加","source":"GameWith","updatedAt":"2026-09-14T09:56:03+09:00","unlockCondition":"-\n鍛錬ランク★1\n鍛錬ランク★2\n鍛錬ランク★4"},{"id":"gw_030","name":"狭間筒","slot":"武具","condition":"鉄砲適性A","tie":"射撃名人,教養,南蛮趣味","traitName":"防知助進\n銃防佑援\n知進遠練","traitEffect":"部隊の防御+2%(縁一致：知略+2%)\n装着武将が鉄砲兵科の場合、大将の戦法発動時、部隊の防御+10%(縁一致：20%)(15秒)\n部隊の知略+5%(縁一致：さらに、部隊の「遠射」の技能Lv+1)","source":"GameWith","updatedAt":"2026-09-14T09:56:03+09:00","unlockCondition":"鍛錬ランク★1\n鍛錬ランク★2\n鍛錬ランク★4"},{"id":"gw_031","name":"忍頭巾","slot":"兜","condition":"-","tie":"伊賀,甲賀,牢人","traitName":"破壊助進\n敵陣忍駆\n破進発練","traitEffect":"部隊の破壊+2%(縁一致：4%)\n装着武将が忍者兵科の場合、敵大名家領土内での行軍速度低下を10%軽減(縁一致：20%)\n部隊の破壊+5%(縁一致：さらに、部隊の「発奮」の技能Lv+1)","source":"GameWith","updatedAt":"2026-09-14T09:56:03+09:00","unlockCondition":"鍛錬ランク★1\n鍛錬ランク★2\n鍛錬ランク★4"},{"id":"gw_055","name":"人間無骨","slot":"武具","condition":"足軽適性A","tie":"織田家,鬼/夜叉,茶の湯","traitName":"勇破邁進Ⅰ\n撃心助録Ⅰ\n撃威助録Ⅰ","traitEffect":"部隊の武勇、破壊+2%(縁一致：4%)\n装着武将が大将の場合、装着武将の戦法に「自身1部隊の撃心発生率10%(縁一致：20%)上昇(10秒)」を追加\n装着武将が大将の場合、装着武将の戦法に「自身1部隊の撃心威力10%(縁一致：20%)上昇(10秒)」を追加","source":"GameWith","updatedAt":"2026-09-14T09:46:00+09:00","unlockCondition":"鍛錬ランク★1\n鍛錬ランク★2\n鍛錬ランク★4"}]''')
+          p=Path('index.html')
+          s=p.read_text(encoding='utf-8')
+          m=re.search(r'const\s+ITEM_DB_DEFAULTS\s*=\s*',s)
+          if not m: raise SystemExit('ITEM_DB_DEFAULTS marker not found')
+          start=m.end(); depth=0; ins=False; esc=False; end=None
+          for j in range(start,len(s)):
+            c=s[j]
+            if ins:
+              if esc: esc=False
+              elif c=='\\': esc=True
+              elif c=='"': ins=False
+            else:
+              if c=='"': ins=True
+              elif c=='[': depth+=1
+              elif c==']':
+                depth-=1
+                if depth==0:
+                  end=j+1; break
+          if end is None: raise SystemExit('ITEM_DB_DEFAULTS end not found')
+          arr=json.loads(s[start:end])
+          umap={x['id']:x for x in updates}; seen=set()
+          for i,x in enumerate(arr):
+            if x.get('id') in umap:
+              arr[i]=umap[x['id']]; seen.add(x['id'])
+          missing=set(umap)-seen
+          if missing: raise SystemExit('Missing IDs: '+','.join(sorted(missing)))
+          newarr=json.dumps(arr,ensure_ascii=False,separators=(',',':'))
+          p.write_text(s[:start]+newarr+s[end:],encoding='utf-8')
+          print('Updated',len(seen),'items; total',len(arr),'with effects',sum(bool(x.get('traitEffect')) for x in arr))
+          PY
+          node - <<'JS'
+          const fs=require('fs');const s=fs.readFileSync('index.html','utf8');for(const b of s.matchAll(/<script(?:\s[^>]*)?>([\s\S]*?)<\/script>/gi)){new Function(b[1]);}console.log('JavaScript syntax OK');
+          JS
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add index.html
+          git diff --cached --quiet && exit 0
+          git commit -m "Sync latest item DB 2026-09-14"
+          git push
