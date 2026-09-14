@@ -1,0 +1,42 @@
+name: ChatGPT check current DB
+on: push
+permissions:
+  contents: read
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Compare DB hashes
+        run: |
+          python - <<'PY'
+          import re,json,hashlib
+          s=open('index.html',encoding='utf-8').read()
+          def extract(name):
+            mark='const '+name+' = '
+            i=s.index(mark)+len(mark)
+            while s[i].isspace(): i+=1
+            start=i; depth=0; ins=False; esc=False
+            for j in range(start,len(s)):
+              c=s[j]
+              if ins:
+                if esc: esc=False
+                elif c=='\\': esc=True
+                elif c=='"': ins=False
+              else:
+                if c=='"': ins=True
+                elif c=='[': depth+=1
+                elif c==']':
+                  depth-=1
+                  if depth==0: return json.loads(s[start:j+1])
+            raise RuntimeError(name)
+          db=extract('DB')
+          items=extract('ITEM_DB_DEFAULTS')
+          db2=[{k:v for k,v in x.items() if k!='戦法属性'} for x in db]
+          h=lambda x:hashlib.sha256(json.dumps(x,ensure_ascii=False,sort_keys=True,separators=(',',':')).encode()).hexdigest()
+          print('DB_COUNT',len(db))
+          print('DB_HASH_NO_ATTR',h(db2))
+          print('ITEM_COUNT',len(items))
+          print('ITEM_HASH',h(items))
+          print('ITEM_WITH_EFFECT',sum(bool(x.get('traitEffect')) for x in items))
+          PY
