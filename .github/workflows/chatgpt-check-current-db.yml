@@ -13,10 +13,9 @@ jobs:
           import re,json,hashlib
           s=open('index.html',encoding='utf-8').read()
           def extract(name):
-            mark='const '+name+' = '
-            i=s.index(mark)+len(mark)
-            while s[i].isspace(): i+=1
-            start=i; depth=0; ins=False; esc=False
+            m=re.search(r'const\s+'+re.escape(name)+r'\s*=\s*',s)
+            if not m: raise RuntimeError('marker '+name)
+            i=m.end(); start=i; depth=0; ins=False; esc=False
             for j in range(start,len(s)):
               c=s[j]
               if ins:
