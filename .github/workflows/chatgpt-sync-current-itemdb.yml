@@ -7,18 +7,14 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Sync current item DB
+      - name: Sync final item DB record
         run: |
           python - <<'PY'
           import re,json
           from pathlib import Path
-          p=Path('index.html')
-          s=p.read_text(encoding='utf-8')
-          updates=json.loads(r'''[{"id":"gw_069","name":"黒糸威二枚胴","slot":"鎧","condition":"-","tie":"小姓,徳川家,四天王","traitName":"攻防始動Ⅰ\n撃破銭訓Ⅰ\n攻勇猛立Ⅰ","traitEffect":"装着武将が大将の場合、交戦開始時に1度だけ、自身1部隊に攻撃、防御10%(縁一致：20%)上昇(15秒)を付与\n装着武将が大将の場合、賊撃破時に入手できる銅銭+5%(縁一致：さらに敵部隊撃破時、編制した部隊が獲得できる武将の経験+5%)\n部隊が攻撃命令中か制圧中に、部隊の攻撃、武勇+5%(縁一致：10%)","source":"GameWith","updatedAt":"2026-09-08T16:50:00+09:00","unlockCondition":"鍛錬ランク★1\n鍛錬ランク★2\n鍛錬ランク★4"},{"id":"gw_070","name":"銀泥塗富士山形兜","slot":"兜","condition":"-","tie":"水軍,羽柴家,治水名人","traitName":"攻戦追録Ⅰ\n攻戦始動Ⅰ\n攻戦軒昂Ⅰ","traitEffect":"装着武将と繋がった配置の武将と同じ縁が合計2以上の場合、装着武将の戦法に「自身1部隊の通常攻撃威力、戦法威力を1%(縁一致：3%)累加(90秒)」を追加\n装着武将が大将の場合か、副将で大将と同じ縁が2以上の場合、交戦開始時に1度だけ、自身1部隊の通常攻撃威力、戦法威力を2%(縁一致：5%)累加(90秒)\n装着武将が大将の場合か、副将で大将と同じ縁が2以上の場合、通常攻撃時に10%(縁一致：20%)の確率で、自身1部隊の通常攻撃威力、戦法威力を2%累加(90秒)","source":"GameWith","updatedAt":"2026-09-08T16:50:00+09:00","unlockCondition":"鍛錬ランク★1\n鍛錬ランク★2\n鍛錬ランク★4"},{"id":"gw_071","name":"弦月前立兜","slot":"兜","condition":"-","tie":"伊達最上家,射撃名人,龍","traitName":"騎砲烈複Ⅰ\n見切開幕Ⅰ\n騎砲貫穿Ⅰ\n心月皓々Ⅰ","traitEffect":"部隊が騎馬、鉄砲兵科の場合、部隊の会心威力+5%(縁一致：15%)(縁2一致：さらに、鉄砲兵科の大将の場合、通常攻撃の対象部隊+1(上限4))\n装着武将が大将の場合、交戦開始時に自身に見切が付与されていない場合に1度だけ、自身1部隊に見切(10秒)(縁一致：30秒)を付与\n装着武将が騎馬、鉄砲兵科の大将の場合、通常攻撃時、敵部隊の防御を10%(縁一致：20%)下げた状態で扱う\n装着武将が騎馬、鉄砲兵科の大将の場合、通常攻撃の会心発生時、戦法威力を2%累加(重複可・打消不可)(90秒)(縁一致：さらに、戦法ゲージ+2%)(複数部隊に対して同時に会心が発生した場合でも、効果の発動は1度のみ)","source":"GameWith","updatedAt":"2026-09-08T16:50:00+09:00","unlockCondition":"-\n鍛錬ランク★1\n鍛錬ランク★4\n鍛錬ランク★7"},{"id":"gw_072","name":"十二間突盔形兜","slot":"兜","condition":"-","tie":"宗我部明智家,水軍,鬼/夜叉","traitName":"勇知重進Ⅰ\n兵進慧練Ⅰ\n水鬼団結Ⅰ\n反骨回避Ⅰ","traitEffect":"部隊の武勇、知略+5%(縁一致：10%)\n部隊の兵力+5%(縁一致：さらに、部隊が発動している「慧眼」の技能Lv+1)\n装着武将と繋がった配置の武将と同じ縁が合計2以上の場合、自身と繋がった配置の武将との戦法連鎖率+2%(縁一致：さらに、「水軍」か「鬼/夜叉」の縁を持つ武将間での戦法連鎖率+6%)\n装着武将と繋がった配置の武将と同じ縁が合計2以上の場合、出陣中に初めて兵力50%以下になった時、自身1部隊に通常攻撃回避100%(5秒)(縁一致：15秒)を付与","source":"GameWith","updatedAt":"2026-09-08T16:50:00+09:00","unlockCondition":"-\n鍛錬ランク★1\n鍛錬ランク★4\n鍛錬ランク★7"},{"id":"gw_078","name":"日根野頭形兜","slot":"兜","condition":"-","tie":"軍師,豪傑,一門衆","traitName":"攻勇細進\n銃攻佑援\n兵進忠練","traitEffect":"部隊の武勇+2%(縁一致：攻撃+2%)\n装着武将が鉄砲兵科の場合、大将の戦法発動時、部隊の攻撃+10%(縁一致：20%)(15秒)\n部隊の兵力+5%(縁一致：さらに、部隊が発動している「忠義」の技能Lv+1)","source":"GameWith","updatedAt":"2026-09-08T16:50:00+09:00","unlockCondition":"-\n鍛錬ランク★1\n鍛錬ランク★4"},{"id":"gw_079","name":"鎖帷子","slot":"鎧","condition":"-","tie":"講談,籠城名人,謀略家","traitName":"防知細進\n忍疑付術\n破進参練","traitEffect":"部隊の知略+2%(縁一致：防御+2%)\n装着武将が忍者兵科の場合、交戦開始時に1度だけ、攻撃目標の敵1部隊に疑心10%(縁一致：20%)(30秒)を付与\n部隊の破壊+5%(縁一致：さらに、部隊が発動している「参謀」の技能Lv+1)","source":"GameWith","updatedAt":"2026-09-08T16:50:00+09:00","unlockCondition":"-\n鍛錬ランク★1\n鍛錬ランク★4"},{"id":"gw_080","name":"浅井一文字","slot":"刀","condition":"-","tie":"浅井朝倉家,巨漢,律義者","traitName":"一念巧練Ⅰ\n撃心盛強Ⅰ\n攻勇重進Ⅰ\n撃心盛強Ⅱ","traitEffect":"部隊の破壊+5%(縁一致：さらに、部隊が発動している「一念」の技能Lv+1)\n装着武将と繋がった配置の武将と同じ縁が合計2以上の場合、装着武将の戦法による撃心威力上昇の効果+5%(縁一致：15%)\n装着武将が大将の場合か、副将で大将と同じ縁が2以上の場合、部隊の武勇+10%(縁一致：さらに、攻撃+10%)\n装着武将と繋がった配置の武将と同じ縁が合計2以上の場合、装着武将の戦法による撃心威力上昇の効果+10%(縁一致：30%)、撃心発生率上昇の効果+5%(縁一致：10%)","source":"GameWith","updatedAt":"2026-09-08T16:50:00+09:00","unlockCondition":"-\n鍛錬ランク★1\n鍛錬ランク★4\n鍛錬ランク★7"},{"id":"gw_081","name":"金象嵌鹿角前立兜","slot":"兜","condition":"-","tie":"三好細川家,謀略家,水軍","traitName":"反骨堅固Ⅰ\n攻進才練Ⅰ\n知破盛強Ⅰ\n反骨堅固Ⅱ","traitEffect":"兵力が50%以下になるダメージを受けたとき、自身1部隊に堅固10%(10秒)(縁一致：20秒)を付与(縁2一致：さらに、1度だけ兵力50%を下回る分のダメージを無効にする)\n部隊の攻撃+5%(縁一致：さらに、部隊が発動している「才気」の技能Lv+1)\n装着武将の戦法による知略、破壊上昇の効果+10%(縁一致：30%)\n兵力が50%以下になるダメージを受けたとき、自身1部隊に堅固10%(20秒)(縁一致：さらに、結束10%(30秒))を付与(縁2一致：さらに、1度だけ兵力50%を下回る分のダメージを無効にする)","source":"GameWith","updatedAt":"2026-09-08T16:50:00+09:00","unlockCondition":"-\n鍛錬ランク★1\n鍛錬ランク★4\n鍛錬ランク★7"},{"id":"gw_083","name":"伊賀流大苦無","slot":"武具","condition":"忍者適性A","tie":"伊賀,講談","traitName":"両刃巧練Ⅰ\n戦速展開\n避疑盛強Ⅰ\n麻痺追打Ⅰ","traitEffect":"部隊の知略+5%(縁一致：さらに、部隊が発動している「両刃」の技能Lv+1)\n装着武将が足軽、忍者兵科の大将の場合か、副将で大将と同じ縁が2以上の場合、交戦開始時に1度だけ、自身1部隊に戦法速度上昇+5%(縁一致：15%)(10秒)を付与\n装着武将と繋がった配置の武将と同じ縁が合計2以上の場合、装着武将の戦法による通常攻撃回避、疑心の効果+10%(縁一致：20%)\n装着武将が足軽、忍者兵科の大将の場合か、副将で大将と同じ縁が2以上の場合、通常攻撃が命中した部隊に麻痺が付与されていない場合、25%(縁一致：50%)の確率で麻痺30%(10秒)を付与","source":"GameWith","updatedAt":"2026-09-08T16:50:00+09:00","unlockCondition":"-\n鍛錬ランク★1\n鍛錬ランク★4\n鍛錬ランク★7"}]''')
-          umap={x['id']:x for x in updates}
-          m=re.search(r'const\s+ITEM_DB_DEFAULTS\s*=\s*',s)
-          if not m: raise SystemExit('ITEM_DB_DEFAULTS marker not found')
-          start=m.end(); depth=0; ins=False; esc=False; end=None
+          p=Path('index.html'); s=p.read_text(encoding='utf-8')
+          target=json.loads(r'''{"id":"gw_093","name":"天衝脇立兜","slot":"兜","condition":"-","tie":"徳川家,赤備え","traitName":"峻厳巧練Ⅰ\n攻勇増進Ⅰ\n萎縮追打Ⅰ\n戦遅付術Ⅰ","traitEffect":"部隊の防御+5%(縁一致：さらに、部隊が発動している「峻厳」の技能Lv+1)\n装着武将と繋がった配置の武将と同じ縁が合計2以上の場合、部隊の武勇+5%(縁一致：さらに攻撃+10%)\n装着武将が大将の場合か、副将で大将と同じ縁が2以上の場合、通常攻撃が命中した部隊に萎縮が付与されていないとき、15%(縁一致：30%)の確率で萎縮(10秒)を付与\n部隊が足軽か騎馬兵科で、装着武将が大将の場合か、副将で大将と同じ縁が2以上の場合、出陣後の最初の通常攻撃が命中した敵部隊に戦法速度低下5%(縁一致：15%)(15秒)を付与","source":"GameWith","updatedAt":"2026-09-08T16:30:00+09:00","unlockCondition":"-\n鍛錬ランク★1\n鍛錬ランク★4\n鍛錬ランク★7"}''')
+          m=re.search(r'const\s+ITEM_DB_DEFAULTS\s*=\s*',s); start=m.end(); depth=0; ins=False; esc=False
           for j in range(start,len(s)):
             c=s[j]
             if ins:
@@ -32,18 +28,13 @@ jobs:
                 depth-=1
                 if depth==0:
                   end=j+1; break
-          if end is None: raise SystemExit('ITEM_DB_DEFAULTS end not found')
-          arr=json.loads(s[start:end])
-          seen=set()
+          arr=json.loads(s[start:end]); found=False
           for i,x in enumerate(arr):
-            if x.get('id') in umap:
-              arr[i]=umap[x['id']]; seen.add(x['id'])
-          missing=set(umap)-seen
-          if missing: raise SystemExit('Missing IDs: '+','.join(sorted(missing)))
-          newarr=json.dumps(arr,ensure_ascii=False,separators=(',',':'))
-          s=s[:start]+newarr+s[end:]
+            if x.get('id')=='gw_093': arr[i]=target; found=True; break
+          if not found: raise SystemExit('gw_093 not found')
+          s=s[:start]+json.dumps(arr,ensure_ascii=False,separators=(',',':'))+s[end:]
           p.write_text(s,encoding='utf-8')
-          print('Updated',len(seen),'items; total',len(arr),'with effects',sum(bool(x.get('traitEffect')) for x in arr))
+          print('Synced gw_093; total',len(arr),'with effects',sum(bool(x.get('traitEffect')) for x in arr))
           PY
           node - <<'JS'
           const fs=require('fs');const s=fs.readFileSync('index.html','utf8');for(const b of s.matchAll(/<script(?:\s[^>]*)?>([\s\S]*?)<\/script>/gi)){new Function(b[1]);}console.log('JavaScript syntax OK');
@@ -52,5 +43,5 @@ jobs:
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add index.html
           git diff --cached --quiet && exit 0
-          git commit -m "Sync current item DB"
+          git commit -m "Sync final current item DB record"
           git push
